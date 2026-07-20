@@ -1,10 +1,10 @@
 {
     "name": "@erag/text-editor-vue",
-    "version": "0.2.44",
+    "version": "0.2.47",
     "description": "A dependency-free Vue 3 rich text editor built with native browser APIs, flexible configuration, and full TypeScript support.",
     "type": "module",
     "license": "MIT",
-    "author": "Amit Gupta",
+    "author": "Er Amit Gupta",
     "repository": {
         "type": "git",
         "url": "https://github.com/eramitgupta/text-editor-vue.git"
@@ -42,19 +42,19 @@
     "scripts": {
         "dev": "vite build --watch",
         "build": "vite build",
-        "format": "prettier --write src eslint.config.js vite.config.ts package.json README.md",
-        "format:check": "prettier --check src eslint.config.js vite.config.ts package.json README.md",
-        "lint": "eslint src vite.config.ts",
+        "lint": "prettier --write src eslint.config.js vite.config.ts package.json README.md && eslint src vite.config.ts --fix",
+        "lint:check": "prettier --check src eslint.config.js vite.config.ts package.json README.md && eslint src vite.config.ts",
         "typecheck": "tsc --noEmit -p tsconfig.json",
-        "prepublishOnly": "npm run format:check && npm run lint && npm run typecheck && npm run build"
+        "prepublishOnly": "npm run lint:check && npm run typecheck && npm run build"
     },
     "peerDependencies": {
         "vue": ">=3.5.0 <4"
     },
     "devDependencies": {
-        "@eslint/js": "^9.39.0",
         "@babel/eslint-parser": "^7.28.0",
         "@babel/preset-typescript": "^7.28.0",
+        "@eslint/js": "^9.39.0",
+        "@types/node": "^24.13.3",
         "@typescript/typescript6": "^6.0.0",
         "@vitejs/plugin-vue": "^6.0.0",
         "eslint": "^9.39.0",

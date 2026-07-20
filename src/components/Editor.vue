@@ -79,7 +79,6 @@ const history = useEditorHistory(editor.root);
 const selection = useEditorSelection(editor.root);
 const shell = useTemplateRef<HTMLElement>('shell');
 const contentWrap = useTemplateRef<HTMLElement>('contentWrap');
-const content = useTemplateRef<InstanceType<typeof EditorContent>>('content');
 const dialog = shallowRef<EditorDialogName | null>(null);
 const dialogMode = shallowRef<'forecolor' | 'backcolor' | null>(null);
 const lastCommitted = shallowRef(props.modelValue);
@@ -548,7 +547,6 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
             class="erag-editor__content-wrap"
         >
             <EditorContent
-                ref="content"
                 :id="props.id"
                 :html="editor.html.value"
                 :disabled="props.disabled"
