@@ -1,6 +1,6 @@
 {
     "name": "@erag/text-editor-vue",
-    "version": "0.2.47",
+    "version": "0.2.48",
     "description": "A dependency-free Vue 3 rich text editor built with native browser APIs, flexible configuration, and full TypeScript support.",
     "type": "module",
     "license": "MIT",
@@ -57,6 +57,7 @@
         "@types/node": "^24.13.3",
         "@typescript/typescript6": "^6.0.0",
         "@vitejs/plugin-vue": "^6.0.0",
+        "@vue/language-core": "^3.3.7",
         "eslint": "^9.39.0",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-vue": "^10.0.0",
