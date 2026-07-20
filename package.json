@@ -1,10 +1,13 @@
 {
     "name": "@erag/text-editor-vue",
     "version": "0.2.51",
-    "description": "A dependency-free Vue 3 rich text editor built with native browser APIs, flexible configuration, and full TypeScript support.",
+    "description": "A modern dependency-free Vue 3 rich text editor (WYSIWYG) built with native browser APIs. Supports TypeScript, mentions, merge tags, templates, image upload, tables, HTML editing, and customizable toolbars.",
     "type": "module",
     "license": "MIT",
-    "author": "Er Amit Gupta",
+    "author": {
+        "name": "Er Amit Gupta",
+        "url": "https://github.com/eramitgupta"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/eramitgupta/text-editor-vue.git"
@@ -16,10 +19,35 @@
     "keywords": [
         "vue",
         "vue3",
-        "editor",
-        "rich-text",
+        "vue-editor",
+        "vue-rich-text-editor",
+        "rich-text-editor",
+        "text-editor",
         "wysiwyg",
-        "typescript"
+        "wysiwyg-editor",
+        "html-editor",
+        "contenteditable",
+        "typescript",
+        "dependency-free",
+        "zero-dependencies",
+        "native-browser-api",
+        "open-source",
+        "free",
+        "pro-features",
+        "enterprise-ready",
+        "customizable",
+        "toolbar",
+        "mentions",
+        "merge-tags",
+        "templates",
+        "email-templates",
+        "image-upload",
+        "media-upload",
+        "table-editor",
+        "document-editor",
+        "email-editor",
+        "cms-editor",
+        "vite"
     ],
     "files": [
         "dist",
