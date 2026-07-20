@@ -1,0 +1,120 @@
+.erag-template-dialog {
+    display: grid;
+    min-height: 420px;
+    grid-template-columns: minmax(190px, 34%) minmax(0, 1fr);
+    gap: 12px;
+}
+.erag-template-dialog__sidebar,
+.erag-template-dialog__preview {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #e2e7ee;
+    border-radius: 8px;
+}
+.erag-template-dialog__sidebar {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+}
+.erag-template-dialog__search {
+    display: block;
+    padding: 10px;
+}
+.erag-template-dialog__search-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+.erag-template-dialog__search-input {
+    width: 100%;
+    min-height: 36px;
+    padding: 7px 10px;
+    color: #1f2937;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+}
+.erag-template-dialog__search-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgb(37 99 235 / 10%);
+}
+.erag-template-dialog__groups {
+    flex: 1 1 auto;
+    padding: 0 8px 10px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.erag-template-dialog__group + .erag-template-dialog__group {
+    margin-top: 10px;
+}
+.erag-template-dialog__group-title {
+    margin: 0 4px 4px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+}
+.erag-template-dialog__item {
+    display: block;
+    width: 100%;
+    padding: 7px 9px;
+    color: #334155;
+    text-align: left;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+}
+.erag-template-dialog__item:hover,
+.erag-template-dialog__item:focus-visible,
+.erag-template-dialog__item.erag-is-active {
+    color: #ffffff;
+    background: #2563eb;
+    outline: none;
+}
+.erag-template-dialog__item-label,
+.erag-template-dialog__item-description {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.erag-template-dialog__item-label {
+    font-weight: 600;
+}
+.erag-template-dialog__item-description {
+    margin-top: 1px;
+    color: #64748b;
+    font-size: 11px;
+}
+.erag-template-dialog__item:hover .erag-template-dialog__item-description,
+.erag-template-dialog__item:focus-visible .erag-template-dialog__item-description,
+.erag-template-dialog__item.erag-is-active .erag-template-dialog__item-description {
+    color: rgb(255 255 255 / 82%);
+}
+.erag-template-dialog__preview {
+    overflow-y: auto;
+    background: #f8fafc;
+}
+.erag-template-dialog__preview-content {
+    min-height: 100%;
+    padding: 20px 24px;
+    color: #273142;
+    background: #ffffff;
+}
+.erag-template-dialog__empty {
+    margin: 0;
+    padding: 20px 12px;
+    color: #64748b;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .erag-template-dialog {
+        min-height: 500px;
+        grid-template-rows: minmax(190px, 42%) minmax(0, 1fr);
+        grid-template-columns: 1fr;
+    }
+}

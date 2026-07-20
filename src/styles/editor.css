@@ -1,0 +1,276 @@
+.erag-editor {
+    --erag-editor-border-color: #d9dce1;
+    --erag-editor-active-color: #2563eb;
+    --erag-editor-active-bg: #eaf2ff;
+    --erag-editor-text-color: #1f2937;
+    --erag-editor-muted-color: #6b7280;
+    --erag-editor-surface: #ffffff;
+    --erag-editor-panel: #f8fafc;
+    --erag-editor-shadow: 0 10px 28px rgb(15 23 42 / 14%);
+    --erag-editor-radius: 9px;
+    --erag-editor-height: 420px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 260px;
+    height: var(--erag-editor-height);
+    overflow: visible;
+    color: var(--erag-editor-text-color);
+    font:
+        14px/1.45 -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        sans-serif;
+    background: var(--erag-editor-surface);
+    border: 1px solid var(--erag-editor-border-color);
+    border-radius: var(--erag-editor-radius);
+}
+
+.erag-editor,
+.erag-editor *,
+.erag-dialog,
+.erag-dialog * {
+    box-sizing: border-box;
+}
+
+.erag-editor:focus-within {
+    border-color: #9dbcf8;
+    box-shadow: 0 0 0 2px rgb(37 99 235 / 9%);
+}
+
+.erag-editor.erag-is-disabled {
+    opacity: 0.64;
+    background: #f8fafc;
+}
+
+.erag-editor.erag-is-readonly .erag-editor__content {
+    background: #fbfcfe;
+}
+
+.erag-editor__content-wrap {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 80px;
+    overflow: hidden;
+}
+
+.erag-editor__canvas {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: var(--erag-editor-surface);
+}
+
+.erag-editor__content {
+    min-height: 100%;
+    padding: 22px 24px;
+    overflow-wrap: anywhere;
+    color: var(--erag-editor-text-color);
+    background: var(--erag-editor-surface);
+    outline: none;
+}
+
+.erag-editor__content:empty::before {
+    color: #9ca3af;
+    pointer-events: none;
+    content: attr(data-erag-placeholder);
+}
+
+.erag-editor__content a {
+    color: #2563eb;
+}
+.erag-editor__content h1,
+.erag-editor__content h2,
+.erag-editor__content h3,
+.erag-editor__content h4,
+.erag-editor__content h5,
+.erag-editor__content h6 {
+    margin-block: 0.65em 0.4em;
+    font-weight: 600;
+    line-height: 1.25;
+}
+.erag-editor__content h1 {
+    font-size: 2em;
+}
+.erag-editor__content h2 {
+    font-size: 1.75em;
+}
+.erag-editor__content h3 {
+    font-size: 1.5em;
+}
+.erag-editor__content h4 {
+    font-size: 1.25em;
+}
+.erag-editor__content h5 {
+    font-size: 1.1em;
+}
+.erag-editor__content h6 {
+    font-size: 1em;
+}
+.erag-editor__content p {
+    margin-block: 0.5em;
+}
+.erag-editor__content ul,
+.erag-editor__content ol {
+    margin-block: 0.5em;
+    padding-inline-start: 1.75em;
+    list-style-position: outside;
+}
+.erag-editor__content ul {
+    list-style-type: disc;
+}
+.erag-editor__content ol {
+    list-style-type: decimal;
+}
+.erag-editor__content ul ul {
+    list-style-type: circle;
+}
+.erag-editor__content ul ul ul {
+    list-style-type: square;
+}
+.erag-editor__content ol ol {
+    list-style-type: lower-alpha;
+}
+.erag-editor__content ol ol ol {
+    list-style-type: lower-roman;
+}
+.erag-editor__content li {
+    display: list-item;
+    margin-block: 0.2em;
+}
+.erag-editor__content li > ul,
+.erag-editor__content li > ol {
+    margin-block: 0.2em;
+}
+.erag-editor__content img,
+.erag-editor__content video,
+.erag-editor__content iframe {
+    max-width: 100%;
+}
+.erag-editor__content table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+.erag-editor__content td,
+.erag-editor__content th {
+    min-width: 36px;
+    height: 34px;
+    padding: 8px;
+    vertical-align: top;
+    border: 1px solid #cbd5e1;
+}
+.erag-editor__content [data-erag-selected] {
+    outline: 2px solid var(--erag-editor-active-color);
+}
+.erag-editor__content blockquote {
+    margin-inline: 0;
+    padding-inline-start: 16px;
+    color: #475569;
+    border-inline-start: 3px solid #cbd5e1;
+}
+.erag-editor__content pre {
+    padding: 12px;
+    overflow: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: #f1f5f9;
+    border-radius: 5px;
+}
+
+.erag-editor__empty {
+    position: absolute;
+    inset: 22px 24px auto;
+    z-index: 1;
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+.erag-statusbar {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    min-height: 28px;
+    padding-inline-start: 10px;
+    overflow: hidden;
+    color: var(--erag-editor-muted-color);
+    font-size: 11px;
+    background: var(--erag-editor-panel);
+    border-top: 1px solid #edf0f4;
+    border-radius: 0 0 var(--erag-editor-radius) var(--erag-editor-radius);
+}
+
+.erag-statusbar__path {
+    max-width: 42%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.erag-statusbar__count {
+    margin-inline-start: 14px;
+    white-space: nowrap;
+}
+.erag-statusbar__help {
+    margin-inline-start: auto;
+    white-space: nowrap;
+}
+.erag-statusbar__slot {
+    display: inline-flex;
+    margin-inline-end: 8px;
+}
+.erag-statusbar__resize {
+    position: relative;
+    width: 24px;
+    height: 27px;
+    padding: 0;
+    color: #94a3b8;
+    cursor: nwse-resize;
+    background: transparent;
+    border: 0;
+}
+.erag-statusbar__resize::before,
+.erag-statusbar__resize::after,
+.erag-statusbar__resize span::after {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    width: 7px;
+    height: 1px;
+    background: currentColor;
+    content: '';
+    transform: rotate(-45deg);
+    transform-origin: right center;
+}
+.erag-statusbar__resize::after {
+    width: 4px;
+    bottom: 3px;
+}
+.erag-statusbar__resize span::after {
+    width: 10px;
+    bottom: 5px;
+}
+
+.erag-editor--fullscreen {
+    position: fixed !important;
+    z-index: 2147483000 !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+}
+
+@media (max-width: 560px) {
+    .erag-editor__content {
+        padding: 16px;
+    }
+    .erag-statusbar__help,
+    .erag-statusbar__path {
+        display: none;
+    }
+    .erag-statusbar__count:first-of-type {
+        margin-inline-start: 0;
+    }
+}

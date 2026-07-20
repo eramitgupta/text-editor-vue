@@ -1,0 +1,47 @@
+.erag-editor {
+    --erag-image-resize-color: #2563eb;
+    --erag-image-resize-handle-size: 12px;
+}
+
+.erag-editor .erag-image-resize {
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    border: 2px solid var(--erag-image-resize-color);
+}
+
+.erag-editor .erag-image-resize__handle {
+    position: absolute;
+    width: var(--erag-image-resize-handle-size);
+    height: var(--erag-image-resize-handle-size);
+    padding: 0;
+    touch-action: none;
+    pointer-events: auto;
+    background: #ffffff;
+    border: 2px solid var(--erag-image-resize-color);
+    border-radius: 2px;
+}
+
+.erag-editor .erag-image-resize__handle--north-west {
+    top: calc(var(--erag-image-resize-handle-size) / -2);
+    left: calc(var(--erag-image-resize-handle-size) / -2);
+    cursor: nwse-resize;
+}
+
+.erag-editor .erag-image-resize__handle--north-east {
+    top: calc(var(--erag-image-resize-handle-size) / -2);
+    right: calc(var(--erag-image-resize-handle-size) / -2);
+    cursor: nesw-resize;
+}
+
+.erag-editor .erag-image-resize__handle--south-west {
+    bottom: calc(var(--erag-image-resize-handle-size) / -2);
+    left: calc(var(--erag-image-resize-handle-size) / -2);
+    cursor: nesw-resize;
+}
+
+.erag-editor .erag-image-resize__handle--south-east {
+    right: calc(var(--erag-image-resize-handle-size) / -2);
+    bottom: calc(var(--erag-image-resize-handle-size) / -2);
+    cursor: nwse-resize;
+}
