@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, useId, useTemplateRef, watch, type CSSProperties } from 'vue';
+import {
+    computed,
+    nextTick,
+    onMounted,
+    useId,
+    useTemplateRef,
+    watch,
+    type CSSProperties,
+} from 'vue';
 import type { MentionDropdownState, MentionItem } from '../../types';
 import MentionResultItem from './MentionItem.vue';
 

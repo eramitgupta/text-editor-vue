@@ -10,7 +10,8 @@ export const defaultMentionConfig: Required<Omit<MentionConfig, 'items'>> = {
 export function normalizeMentionConfig(
     mentions: boolean | MentionConfig | undefined,
 ): ResolvedMentionConfig {
-    const enabled = mentions === true || (typeof mentions === 'object' && mentions.enabled === true);
+    const enabled =
+        mentions === true || (typeof mentions === 'object' && mentions.enabled === true);
     const configured = typeof mentions === 'object' ? mentions : undefined;
     const normalized: ResolvedMentionConfig = {
         enabled,

@@ -87,15 +87,11 @@ export function useImageResize(
             const horizontalWidth = startWidth + horizontalDelta;
             const verticalWidth = (startHeight + verticalDelta) * aspectRatio;
             const requestedWidth =
-                Math.abs(horizontalWidth - startWidth) >=
-                Math.abs(verticalWidth - startWidth)
+                Math.abs(horizontalWidth - startWidth) >= Math.abs(verticalWidth - startWidth)
                     ? horizontalWidth
                     : verticalWidth;
             const width = Math.round(
-                Math.min(
-                    maximumWidth,
-                    Math.max(MINIMUM_IMAGE_SIZE, requestedWidth),
-                ),
+                Math.min(maximumWidth, Math.max(MINIMUM_IMAGE_SIZE, requestedWidth)),
             );
             image.setAttribute('width', String(width));
             image.setAttribute('height', String(Math.round(width / aspectRatio)));

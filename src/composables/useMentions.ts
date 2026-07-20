@@ -1,11 +1,4 @@
-import {
-    computed,
-    nextTick,
-    onBeforeUnmount,
-    onMounted,
-    shallowRef,
-    watch,
-} from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue';
 import type {
     MentionCallbacks,
     MentionComposableSources,
@@ -236,7 +229,9 @@ export function useMentions(sources: MentionComposableSources, callbacks: Mentio
             ) {
                 return;
             }
-            const limited = results.slice(0, sources.config.value.limit).map((item) => ({ ...item }));
+            const limited = results
+                .slice(0, sources.config.value.limit)
+                .map((item) => ({ ...item }));
             rememberItems(limited);
             cache.set(value, limited);
             applyResults(limited);
@@ -277,10 +272,7 @@ export function useMentions(sources: MentionComposableSources, callbacks: Mentio
             );
             const top = placeAbove
                 ? Math.max(VIEWPORT_PADDING, caret.top - height - CARET_GAP)
-                : Math.min(
-                      window.innerHeight - VIEWPORT_PADDING,
-                      caret.bottom + CARET_GAP,
-                  );
+                : Math.min(window.innerHeight - VIEWPORT_PADDING, caret.bottom + CARET_GAP);
             position.value = { left, top };
         });
     }

@@ -52,9 +52,7 @@
     color: #64748b;
     font-size: 11px;
 }
-.erag-editor
-    .erag-merge-tag-dropdown__item.erag-is-active
-    .erag-merge-tag-dropdown__group {
+.erag-editor .erag-merge-tag-dropdown__item.erag-is-active .erag-merge-tag-dropdown__group {
     color: rgb(255 255 255 / 85%);
 }
 .erag-editor .erag-merge-tag-dropdown__empty {

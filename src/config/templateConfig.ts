@@ -1,7 +1,4 @@
-import type {
-    EditorTemplatesConfig,
-    ResolvedEditorTemplatesConfig,
-} from '../types';
+import type { EditorTemplatesConfig, ResolvedEditorTemplatesConfig } from '../types';
 
 export function normalizeEditorTemplatesConfig(
     templates: boolean | EditorTemplatesConfig | undefined,

@@ -103,7 +103,8 @@ function insert(): void {
                             <span
                                 v-if="item.description"
                                 class="erag-template-dialog__item-description"
-                            >{{ item.description }}</span>
+                                >{{ item.description }}</span
+                            >
                         </button>
                     </section>
                     <p
@@ -114,7 +115,10 @@ function insert(): void {
                     </p>
                 </div>
             </aside>
-            <section class="erag-template-dialog__preview" aria-label="Template preview">
+            <section
+                class="erag-template-dialog__preview"
+                aria-label="Template preview"
+            >
                 <div
                     v-if="selected"
                     class="erag-template-dialog__preview-content"

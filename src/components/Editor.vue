@@ -26,7 +26,8 @@ import { useMergeTags } from '../composables/useMergeTags';
 import { useMergeTagSidebar } from '../composables/useMergeTagSidebar';
 import { useWordCount } from '../composables/useWordCount';
 import type {
-    EditorDialogName, EditorEmits,
+    EditorDialogName,
+    EditorEmits,
     EditorInstance,
     EditorTemplateItem,
     EditorProps,
@@ -266,7 +267,10 @@ function saveImage(value: ImageValue): void {
     if (!editor.root.value) return;
     selection.restore();
     const inserted = insertImage(
-        editor.root.value, value, config.value.relativeUrls, config.value.imageDefaultWidth,
+        editor.root.value,
+        value,
+        config.value.relativeUrls,
+        config.value.imageDefaultWidth,
     );
     if (!inserted) return;
     syncInput();
@@ -613,17 +617,41 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
             @retry="mentions.retry"
             @ready="mentions.setDropdownElement"
         >
-            <template v-if="$slots['mention-item']" #item="slotProps">
-                <slot name="mention-item" v-bind="slotProps" />
+            <template
+                v-if="$slots['mention-item']"
+                #item="slotProps"
+            >
+                <slot
+                    name="mention-item"
+                    v-bind="slotProps"
+                />
             </template>
-            <template v-if="$slots['mention-loading']" #loading="slotProps">
-                <slot name="mention-loading" v-bind="slotProps" />
+            <template
+                v-if="$slots['mention-loading']"
+                #loading="slotProps"
+            >
+                <slot
+                    name="mention-loading"
+                    v-bind="slotProps"
+                />
             </template>
-            <template v-if="$slots['mention-empty']" #empty="slotProps">
-                <slot name="mention-empty" v-bind="slotProps" />
+            <template
+                v-if="$slots['mention-empty']"
+                #empty="slotProps"
+            >
+                <slot
+                    name="mention-empty"
+                    v-bind="slotProps"
+                />
             </template>
-            <template v-if="$slots['mention-error']" #error="slotProps">
-                <slot name="mention-error" v-bind="slotProps" />
+            <template
+                v-if="$slots['mention-error']"
+                #error="slotProps"
+            >
+                <slot
+                    name="mention-error"
+                    v-bind="slotProps"
+                />
             </template>
         </MentionDropdown>
         <MergeTagDropdown
@@ -637,7 +665,8 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
             @ready="mergeTags.setDropdownElement"
         />
         <MentionHoverCard
-            v-if="mentions.hoverItem.value" :item="mentions.hoverItem.value"
+            v-if="mentions.hoverItem.value"
+            :item="mentions.hoverItem.value"
             :position-style="mentions.hoverPositionStyle.value"
             @ready="mentions.setHoverCardElement"
         />

@@ -48,11 +48,7 @@ export function createMentionElement(item: MentionItem): HTMLSpanElement {
     return mention;
 }
 
-export function insertMentionAtRange(
-    root: HTMLElement,
-    range: Range,
-    item: MentionItem,
-): boolean {
+export function insertMentionAtRange(root: HTMLElement, range: Range, item: MentionItem): boolean {
     if (!root.contains(range.commonAncestorContainer) || range.toString().charAt(0) !== '@') {
         return false;
     }
@@ -109,9 +105,7 @@ export function isMentionCandidate(element: Element): boolean {
     if (element.tagName.toLowerCase() !== 'span') return false;
     return (
         [...element.classList].some((name) => name.startsWith('erag-mention')) ||
-        [...element.attributes].some((attribute) =>
-            attribute.name.startsWith('data-erag-mention'),
-        )
+        [...element.attributes].some((attribute) => attribute.name.startsWith('data-erag-mention'))
     );
 }
 

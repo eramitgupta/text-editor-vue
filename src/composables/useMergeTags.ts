@@ -17,10 +17,7 @@ const DROPDOWN_HEIGHT = 260;
 const VIEWPORT_PADDING = 12;
 const CARET_GAP = 6;
 
-export function useMergeTags(
-    sources: MergeTagComposableSources,
-    callbacks: MergeTagCallbacks,
-) {
+export function useMergeTags(sources: MergeTagComposableSources, callbacks: MergeTagCallbacks) {
     const isOpen = shallowRef(false);
     const query = shallowRef('');
     const items = shallowRef<MergeTagItem[]>([]);
@@ -168,10 +165,7 @@ export function useMergeTags(
                 ? caret.top - height - CARET_GAP
                 : caret.bottom + CARET_GAP;
             position.value = {
-                left: Math.min(
-                    Math.max(VIEWPORT_PADDING, caret.left),
-                    maximumLeft,
-                ),
+                left: Math.min(Math.max(VIEWPORT_PADDING, caret.left), maximumLeft),
                 top: Math.min(Math.max(VIEWPORT_PADDING, preferredTop), maximumTop),
             };
         });

@@ -76,7 +76,9 @@ defineProps<{ name: string; size?: number }>();
             <path d="M9.8 9a2.3 2.3 0 1 1 3.7 1.8c-1 .7-1.5 1.1-1.5 2.2M12 17h.01" />
         </template>
         <template v-else-if="name === 'print'">
-            <path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <path
+                d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+            />
             <path d="M7 14h10v7H7zM17 11h.01" />
         </template>
         <template v-else-if="name === 'cut'">
@@ -154,10 +156,14 @@ defineProps<{ name: string; size?: number }>();
             <path d="M7 10h.01M11 10h.01M15 10h.01M18 10h.01M7 14h.01M10 14h7" />
         </template>
         <template v-else-if="name === 'github'">
-            <path d="M15 21v-4a4 4 0 0 0-1-3c3.3-.4 6-1.6 6-7a5.4 5.4 0 0 0-1.5-3.8A5 5 0 0 0 18.4 0S17.2-.4 14 1.5a13 13 0 0 0-7 0C3.8-.4 2.6 0 2.6 0a5 5 0 0 0-.1 3.2A5.4 5.4 0 0 0 1 7c0 5.4 2.7 6.6 6 7a4 4 0 0 0-1 3v4M6 18c-3 .9-3-1.5-4-2" />
+            <path
+                d="M15 21v-4a4 4 0 0 0-1-3c3.3-.4 6-1.6 6-7a5.4 5.4 0 0 0-1.5-3.8A5 5 0 0 0 18.4 0S17.2-.4 14 1.5a13 13 0 0 0-7 0C3.8-.4 2.6 0 2.6 0a5 5 0 0 0-.1 3.2A5.4 5.4 0 0 0 1 7c0 5.4 2.7 6.6 6 7a4 4 0 0 0-1 3v4M6 18c-3 .9-3-1.5-4-2"
+            />
         </template>
         <template v-else-if="name === 'documentation'">
-            <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H11v18H6.5A2.5 2.5 0 0 0 4 22zM20 4.5A2.5 2.5 0 0 0 17.5 2H13v18h4.5A2.5 2.5 0 0 1 20 22z" />
+            <path
+                d="M4 4.5A2.5 2.5 0 0 1 6.5 2H11v18H6.5A2.5 2.5 0 0 0 4 22zM20 4.5A2.5 2.5 0 0 0 17.5 2H13v18h4.5A2.5 2.5 0 0 1 20 22z"
+            />
         </template>
         <template v-else-if="name === 'menu-item'">
             <circle
@@ -238,14 +244,26 @@ defineProps<{ name: string; size?: number }>();
             <path d="M12 16V4M7.5 8.5 12 4l4.5 4.5M5 14v5h14v-5" />
         </template>
         <template v-else-if="name === 'emoji'">
-            <circle cx="12" cy="12" r="9" />
+            <circle
+                cx="12"
+                cy="12"
+                r="9"
+            />
             <path d="M8.5 10h.01M15.5 10h.01M8 14c1 2.5 7 2.5 8 0" />
         </template>
         <template v-else-if="name === 'merge-tag'">
-            <path d="M8 7H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h3M16 7h3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-3M14 5l-4 14" />
+            <path
+                d="M8 7H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h3M16 7h3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-3M14 5l-4 14"
+            />
         </template>
         <template v-else-if="name === 'template'">
-            <rect x="4" y="3" width="16" height="18" rx="2" />
+            <rect
+                x="4"
+                y="3"
+                width="16"
+                height="18"
+                rx="2"
+            />
             <path d="M8 8h8M8 12h8M8 16h5" />
         </template>
         <template v-else-if="name === 'close'">

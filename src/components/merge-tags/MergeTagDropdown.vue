@@ -62,7 +62,8 @@ onMounted(() => {
                 <span
                     v-if="item.group"
                     class="erag-merge-tag-dropdown__group"
-                >{{ item.group }}</span>
+                    >{{ item.group }}</span
+                >
             </button>
         </div>
         <div

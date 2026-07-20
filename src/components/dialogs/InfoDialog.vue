@@ -19,8 +19,8 @@ defineEmits<{ close: [] }>();
                 <span class="erag-info__version">v{{ EDITOR_VERSION }}</span>
             </div>
             <p class="erag-info__description">
-                A dependency-free Vue 3 rich text editor built with native browser APIs,
-                flexible configuration, and full TypeScript support.
+                A dependency-free Vue 3 rich text editor built with native browser APIs, flexible
+                configuration, and full TypeScript support.
             </p>
             <p class="erag-info__author">Created and maintained by Er Amit Gupta.</p>
             <div class="erag-info__links">
@@ -37,7 +37,9 @@ defineEmits<{ close: [] }>();
                     />
                     <span class="erag-info__link-content">
                         <strong class="erag-info__link-label">GitHub repository</strong>
-                        <span class="erag-info__link-url">github.com/eramitgupta/text-editor-vue</span>
+                        <span class="erag-info__link-url"
+                            >github.com/eramitgupta/text-editor-vue</span
+                        >
                     </span>
                 </a>
                 <a

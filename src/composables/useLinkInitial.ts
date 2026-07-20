@@ -8,7 +8,8 @@ export function useLinkInitial(root: Ref<HTMLElement | null>) {
     }
     const initial = computed<LinkValue>(() => {
         const anchor = getSelectedAnchor();
-        const selectedText = typeof window === 'undefined' ? '' : (window.getSelection()?.toString() ?? '');
+        const selectedText =
+            typeof window === 'undefined' ? '' : (window.getSelection()?.toString() ?? '');
         return {
             url: anchor?.getAttribute('href') ?? '',
             text: anchor?.textContent ?? selectedText,

@@ -269,13 +269,13 @@ The editor debounces searches, passes an `AbortSignal`, aborts outdated requests
 
 ### Mention configuration
 
-| Option | Default | Description |
-| --- | --- | --- |
-| `enabled` | `true` inside an explicit mention object | Enables the feature; an omitted `mentions` option remains disabled. |
-| `minimumCharacters` | `0` | Characters required after `@` before searching. |
-| `debounce` | `200` | Search delay in milliseconds. |
-| `limit` | `8` | Maximum displayed results. |
-| `items` | none | Static `MentionItem[]` or an async/synchronous query function. |
+| Option              | Default                                  | Description                                                         |
+| ------------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| `enabled`           | `true` inside an explicit mention object | Enables the feature; an omitted `mentions` option remains disabled. |
+| `minimumCharacters` | `0`                                      | Characters required after `@` before searching.                     |
+| `debounce`          | `200`                                    | Search delay in milliseconds.                                       |
+| `limit`             | `8`                                      | Maximum displayed results.                                          |
+| `items`             | none                                     | Static `MentionItem[]` or an async/synchronous query function.      |
 
 ### Mention events
 
@@ -296,10 +296,7 @@ The editor debounces searches, passes an `AbortSignal`, aborts outdated requests
 ### Mention slots
 
 ```vue
-<Editor
-    v-model="content"
-    :init="editorConfig"
->
+<Editor v-model="content" :init="editorConfig">
     <template #mention-item="{ item, active }">
         <div>{{ active ? '→' : '' }} {{ item.label }}</div>
     </template>
@@ -331,7 +328,8 @@ Inserted mentions are non-editable inline elements followed by one normal space:
     data-erag-mention-label="Damon Cross"
     data-erag-mention-value="damon@example.com"
     contenteditable="false"
->@Damon Cross</span>
+    >@Damon Cross</span
+>
 ```
 
 Hovering an inserted mention displays a compact user card. The card resolves the avatar,

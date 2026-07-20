@@ -58,7 +58,10 @@ onMounted(() => {
             >
                 {{ item.description }}
             </span>
-            <span v-if="item.value" class="erag-mention-hover-card__value">
+            <span
+                v-if="item.value"
+                class="erag-mention-hover-card__value"
+            >
                 {{ item.value }}
             </span>
         </span>

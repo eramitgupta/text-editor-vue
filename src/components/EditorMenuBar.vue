@@ -59,11 +59,11 @@ function resolveItems(items: MenuItemDefinition[]): MenuItemDefinition[] {
             let children = item.children;
             if (item.id === 'line-height')
                 children = props.lineHeightFormats.map((option) => ({
-                          id: `line-height-${option.value}`,
-                          label: option.label,
-                          command: 'lineheight',
-                          value: option.value,
-                      }));
+                    id: `line-height-${option.value}`,
+                    label: option.label,
+                    command: 'lineheight',
+                    value: option.value,
+                }));
             if (item.id === 'date-time')
                 children = mergeDateTimeFormats(props.dateFormats, props.timeFormats).map(
                     (option, index) => ({

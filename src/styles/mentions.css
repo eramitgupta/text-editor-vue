@@ -100,9 +100,7 @@
     font-size: 12px;
 }
 
-.erag-editor
-    .erag-mention-dropdown__item.erag-is-active
-    .erag-mention-dropdown__description {
+.erag-editor .erag-mention-dropdown__item.erag-is-active .erag-mention-dropdown__description {
     color: rgb(255 255 255 / 88%);
 }
 

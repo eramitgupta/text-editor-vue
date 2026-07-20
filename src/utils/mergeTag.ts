@@ -2,8 +2,7 @@ import type { MergeTagItem, MergeTagQueryMatch } from '../types';
 
 const MERGE_TAG_PATTERN = /\{\{([^{}\n\r]*)$/u;
 const MERGE_TAG_SELECTOR = 'span.erag-merge-tag[data-erag-merge-tag="true"]';
-const MERGE_TAG_BLOCK_SELECTOR =
-    'p,div,li,h1,h2,h3,h4,h5,h6,blockquote,figcaption,td,th';
+const MERGE_TAG_BLOCK_SELECTOR = 'p,div,li,h1,h2,h3,h4,h5,h6,blockquote,figcaption,td,th';
 
 export function detectMergeTagQuery(root: HTMLElement): MergeTagQueryMatch | null {
     const selection = window.getSelection();
