@@ -1,6 +1,6 @@
 {
     "name": "@erag/text-editor-vue",
-    "version": "0.2.49",
+    "version": "0.2.51",
     "description": "A dependency-free Vue 3 rich text editor built with native browser APIs, flexible configuration, and full TypeScript support.",
     "type": "module",
     "license": "MIT",

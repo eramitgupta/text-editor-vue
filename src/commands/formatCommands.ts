@@ -1,4 +1,5 @@
 import { FORMAT_COMMANDS } from '../constants/editorCommands';
+import type { TextCaseMode } from '../types';
 import { selectionElement } from '../utils/selection';
 
 export function executeFormatCommand(root: HTMLElement, id: string, value?: string): boolean {
@@ -12,8 +13,48 @@ export function executeFormatCommand(root: HTMLElement, id: string, value?: stri
     if (id === 'backcolor')
         return document.execCommand('hiliteColor', false, value ?? 'transparent');
     if (id === 'inlineCode') return document.execCommand('formatBlock', false, 'pre');
+    if (id === 'changeCase' && isTextCaseMode(value)) return changeSelectionCase(root, value);
     const command = FORMAT_COMMANDS[id];
     return command ? document.execCommand(command, false) : false;
+}
+
+function changeSelectionCase(root: HTMLElement, mode: TextCaseMode): boolean {
+    const selection = window.getSelection();
+    if (!selection?.rangeCount || selection.isCollapsed) return false;
+    const range = selection.getRangeAt(0);
+    if (!root.contains(range.commonAncestorContainer)) return false;
+    const fragment = range.extractContents();
+    const first = fragment.firstChild;
+    const last = fragment.lastChild;
+    if (!first || !last) return false;
+    const walker = document.createTreeWalker(fragment, NodeFilter.SHOW_TEXT);
+    let node = walker.nextNode();
+    while (node) {
+        node.textContent = transformCase(node.textContent ?? '', mode);
+        node = walker.nextNode();
+    }
+    range.insertNode(fragment);
+    const selectedRange = document.createRange();
+    selectedRange.setStartBefore(first);
+    selectedRange.setEndAfter(last);
+    selection.removeAllRanges();
+    selection.addRange(selectedRange);
+    return true;
+}
+
+function transformCase(value: string, mode: TextCaseMode): string {
+    if (mode === 'lowercase') return value.toLocaleLowerCase();
+    if (mode === 'uppercase') return value.toLocaleUpperCase();
+    return value
+        .toLocaleLowerCase()
+        .replace(
+            /(^|[^\p{L}\p{N}])(\p{L})/gu,
+            (_, boundary: string, letter: string) => `${boundary}${letter.toLocaleUpperCase()}`,
+        );
+}
+
+function isTextCaseMode(value: string | undefined): value is TextCaseMode {
+    return value === 'lowercase' || value === 'uppercase' || value === 'titlecase';
 }
 
 function clearFormatting(root: HTMLElement): boolean {

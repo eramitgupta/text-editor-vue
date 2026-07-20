@@ -359,11 +359,15 @@
     margin: 12px 0 0;
     text-align: center;
 }
+.erag-character-dialog {
+    display: grid;
+    grid-template-columns: 126px minmax(0, 1fr);
+    gap: 16px;
+}
 .erag-character-dialog__categories {
     display: flex;
-    gap: 5px;
-    margin: 12px 0;
-    overflow-x: auto;
+    flex-direction: column;
+    align-items: stretch;
 }
 .erag-emoji-dialog {
     display: grid;
@@ -439,36 +443,67 @@
     }
 }
 .erag-character-dialog__category {
-    padding: 6px 9px;
+    padding: 5px 0;
+    overflow: hidden;
     color: #475569;
+    font-size: 13px;
+    text-align: left;
+    text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
-    background: #f1f5f9;
+    background: transparent;
     border: 0;
-    border-radius: 5px;
 }
+.erag-character-dialog__category:hover,
 .erag-character-dialog__category.erag-is-active {
     color: #1d4ed8;
-    background: #dbeafe;
+}
+.erag-character-dialog__category.erag-is-active {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+.erag-character-dialog__content {
+    min-width: 0;
+}
+.erag-character-dialog__search {
+    display: block;
+}
+.erag-character-dialog__search-label {
+    display: block;
+    margin-bottom: 4px;
+    color: #64748b;
+    font-size: 12px;
 }
 .erag-character-dialog__grid {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 4px;
+    grid-template-columns: repeat(10, minmax(28px, 1fr));
+    gap: 2px;
+    max-height: 280px;
+    margin-top: 8px;
+    overflow-y: auto;
 }
 .erag-character-dialog__symbol {
     aspect-ratio: 1;
-    min-width: 34px;
-    font-size: 20px;
+    min-width: 28px;
+    padding: 0;
+    font-size: 17px;
     cursor: pointer;
-    background: #fff;
-    border: 1px solid #e2e8f0;
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: 4px;
 }
-.erag-character-dialog__symbol:hover {
+.erag-character-dialog__symbol:hover,
+.erag-character-dialog__symbol:focus-visible {
     color: #1d4ed8;
     background: #eff6ff;
     border-color: #93c5fd;
+    outline: none;
+}
+.erag-character-dialog__empty {
+    grid-column: 1/-1;
+    margin: 24px 0;
+    color: #64748b;
+    text-align: center;
 }
 .erag-source-editor {
     width: 100%;
@@ -573,5 +608,12 @@
     }
     .erag-character-dialog__grid {
         grid-template-columns: repeat(6, 1fr);
+    }
+    .erag-character-dialog {
+        grid-template-columns: 1fr;
+    }
+    .erag-character-dialog__categories {
+        flex-flow: row wrap;
+        gap: 2px 12px;
     }
 }

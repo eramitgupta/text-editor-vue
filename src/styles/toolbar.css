@@ -128,6 +128,48 @@
     right: 8px;
     max-width: calc(100% - 16px);
 }
+.erag-case-menu {
+    width: 190px;
+    padding: 6px;
+    background: #ffffff;
+    border: 1px solid #e2e7ee;
+    border-radius: 8px;
+    box-shadow: var(--erag-editor-shadow);
+}
+.erag-case-menu__item {
+    display: flex;
+    width: 100%;
+    min-height: 38px;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 10px;
+    color: #273142;
+    text-align: left;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+}
+.erag-case-menu__item:hover,
+.erag-case-menu__item:focus-visible,
+.erag-case-menu__item.erag-is-active {
+    color: #ffffff;
+    background: var(--erag-editor-active-color);
+    outline: none;
+}
+.erag-case-menu__label {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.erag-case-menu__check {
+    width: 18px;
+    flex: 0 0 18px;
+    font-size: 18px;
+    text-align: center;
+}
 .erag-toolbar__slot {
     display: inline-flex;
     flex: 0 0 auto;

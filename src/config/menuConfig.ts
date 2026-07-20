@@ -39,6 +39,11 @@ const inline: MenuItemDefinition[] = [
     { id: 'sub', label: 'Subscript', command: 'subscript' },
     { id: 'inline-code', label: 'Inline code', command: 'inlineCode' },
 ];
+const changeCase: MenuItemDefinition[] = [
+    { id: 'case-lowercase', label: 'lowercase', command: 'changeCase', value: 'lowercase' },
+    { id: 'case-uppercase', label: 'UPPERCASE', command: 'changeCase', value: 'uppercase' },
+    { id: 'case-title', label: 'Title Case', command: 'changeCase', value: 'titlecase' },
+];
 
 export const MENU_DEFINITIONS: MenuDefinition[] = [
     {
@@ -123,6 +128,7 @@ export const MENU_DEFINITIONS: MenuDefinition[] = [
         icon: 'format',
         items: [
             ...inline,
+            { id: 'change-case', label: 'Change case', children: changeCase },
             separator('format-1'),
             {
                 id: 'formats',

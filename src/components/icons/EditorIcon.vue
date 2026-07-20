@@ -28,6 +28,19 @@ defineProps<{ name: string; size?: number }>();
                 d="M5 12h14M17 7c-.8-2-2.4-3-5-3-3 0-5 1.5-5 3.5 0 1.7 1.2 2.8 5 3.5m-5 6c1 2 2.5 3 5 3 3 0 5-1.4 5-3.5 0-1.6-1-2.6-3.7-3.5"
             />
         </template>
+        <template v-else-if="name === 'superscript'">
+            <path
+                d="m4 7 9 10M13 7 4 17M16 7c.5-1.3 1.3-2 2.5-2 1.4 0 2.5.8 2.5 2 0 1.5-1.6 2.3-4.7 4H21"
+            />
+        </template>
+        <template v-else-if="name === 'subscript'">
+            <path
+                d="m4 5 9 10M13 5 4 15M16 15c.5-1.3 1.3-2 2.5-2 1.4 0 2.5.8 2.5 2 0 1.5-1.6 2.3-4.7 4H21"
+            />
+        </template>
+        <template v-else-if="name === 'case-change'">
+            <path d="M4 18 9 5l5 13M6 13h6M15 10h5M17.5 7.5 20 10l-2.5 2.5" />
+        </template>
         <template v-else-if="name.includes('align')">
             <path d="M4 6h16M4 10h12M4 14h16M4 18h12" />
         </template>

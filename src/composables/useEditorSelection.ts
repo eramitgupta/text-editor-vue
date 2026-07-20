@@ -29,6 +29,8 @@ export function useEditorSelection(root: Ref<HTMLElement | null>) {
                         'italic',
                         'underline',
                         'strikethrough',
+                        'superscript',
+                        'subscript',
                         'alignleft',
                         'aligncenter',
                         'alignright',

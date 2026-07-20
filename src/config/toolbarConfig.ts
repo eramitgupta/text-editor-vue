@@ -1,7 +1,7 @@
 import type { EditorToolbarGroup, EditorToolbarItemName, ToolbarItemDefinition } from '../types';
 
 export const DEFAULT_TOOLBAR =
-    'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | hr removeformat | code preview fullscreen more';
+    'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough superscript subscript casechange | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | hr removeformat | code preview fullscreen more';
 
 export const TOOLBAR_ITEMS: Record<EditorToolbarItemName, ToolbarItemDefinition> = {
     undo: { name: 'undo', label: 'Undo', icon: 'undo', command: 'undo' },
@@ -35,6 +35,23 @@ export const TOOLBAR_ITEMS: Record<EditorToolbarItemName, ToolbarItemDefinition>
         label: 'Strikethrough',
         icon: 'strikethrough',
         command: 'strikethrough',
+    },
+    superscript: {
+        name: 'superscript',
+        label: 'Superscript',
+        icon: 'superscript',
+        command: 'superscript',
+    },
+    subscript: {
+        name: 'subscript',
+        label: 'Subscript',
+        icon: 'subscript',
+        command: 'subscript',
+    },
+    casechange: {
+        name: 'casechange',
+        label: 'Change case',
+        icon: 'case-change',
     },
     forecolor: {
         name: 'forecolor',

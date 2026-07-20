@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { computed, shallowRef, useTemplateRef } from 'vue';
+import { computed, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue';
 import { TOOLBAR_ITEMS, parseToolbar } from '../config/toolbarConfig';
 import { useToolbarOverflow } from '../composables/useToolbarOverflow';
-import type { EditorToolbarGroup, ResolvedEditorInit, ToolbarItemDefinition } from '../types';
+import type {
+    EditorToolbarGroup,
+    ResolvedEditorInit,
+    TextCaseMode,
+    ToolbarItemDefinition,
+} from '../types';
 import ColorPalette from './toolbar/ColorPalette.vue';
+import CaseChangeMenu from './toolbar/CaseChangeMenu.vue';
 import ToolbarButton from './toolbar/ToolbarButton.vue';
 
 const props = defineProps<{
@@ -18,6 +24,7 @@ const emit = defineEmits<{ command: [id: string, value?: string]; dialog: [name:
 defineSlots<{ start(): unknown; end(): unknown }>();
 const container = useTemplateRef<HTMLElement>('container');
 const open = shallowRef<string | null>(null);
+const selectedCase = shallowRef<TextCaseMode | null>(null);
 const groups = computed(() =>
     parseToolbar(props.toolbar)
         .map((group) => ({
@@ -38,12 +45,22 @@ function available(item: ToolbarItemDefinition): boolean {
 }
 function activate(item: ToolbarItemDefinition): void {
     if (isDisabled(item)) return;
-    if (item.command) emit('command', item.command);
+    if (item.name === 'casechange') {
+        open.value = open.value === 'casechange' ? null : 'casechange';
+    } else if (item.command) emit('command', item.command);
     else if (item.dialog) {
         if (item.dialog === 'forecolor' || item.dialog === 'backcolor')
             open.value = open.value === item.dialog ? null : item.dialog;
         else emit('dialog', item.dialog);
     } else if (item.name === 'more') open.value = open.value === 'more' ? null : 'more';
+}
+function chooseCase(mode: TextCaseMode): void {
+    selectedCase.value = mode;
+    emit('command', 'changeCase', mode);
+    open.value = null;
+}
+function outside(event: PointerEvent): void {
+    if (!container.value?.contains(event.target as Node)) open.value = null;
 }
 function isHistoryCommand(item: ToolbarItemDefinition): boolean {
     return item.command === 'undo' || item.command === 'redo';
@@ -55,6 +72,7 @@ function isDisabled(item: ToolbarItemDefinition): boolean {
     return props.disabled || (isHistoryCommand(item) && !isAvailable(item));
 }
 function isActive(item: ToolbarItemDefinition): boolean {
+    if (item.name === 'casechange') return open.value === 'casechange';
     return Boolean(item.command && !isDisabled(item) && props.activeCommands[item.command]);
 }
 function selectValue(item: ToolbarItemDefinition, event: Event): void {
@@ -73,6 +91,8 @@ function chooseColor(type: string, color: string): void {
     emit('command', type, color || (type === 'forecolor' ? '#000000' : 'transparent'));
     open.value = null;
 }
+onMounted(() => document.addEventListener('pointerdown', outside));
+onBeforeUnmount(() => document.removeEventListener('pointerdown', outside));
 </script>
 
 <template>
@@ -188,6 +208,13 @@ function chooseColor(type: string, color: string): void {
             current=""
             label="Text color"
             @select="chooseColor('forecolor', $event)"
+        />
+        <CaseChangeMenu
+            v-if="open === 'casechange'"
+            class="erag-toolbar__popover"
+            :mode="selectedCase"
+            @select="chooseCase"
+            @close="open = null"
         />
         <ColorPalette
             v-if="open === 'backcolor'"

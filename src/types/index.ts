@@ -9,6 +9,7 @@ export type * from './image';
 export type * from './menu';
 export type * from './mention';
 export type * from './mergeTag';
+export type * from './specialCharacter';
 export type * from './template';
 export type * from './toolbar';
 export type * from './upload';

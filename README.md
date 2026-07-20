@@ -104,6 +104,16 @@ Common underscore aliases including `content_style`, `font_family_formats`, `ima
 Bulleted and numbered lists include package-scoped marker and indentation styles, so application
 CSS resets such as Tailwind Preflight do not hide list markers inside the editor or preview.
 
+The complete toolbar also includes superscript, subscript, and a Change Case menu. These controls
+can be requested explicitly with `superscript`, `subscript`, and `casechange`:
+
+```vue
+<Editor v-model="content" :init="{ toolbar: 'bold italic | superscript subscript casechange' }" />
+```
+
+Insert → Special character provides searchable Currency, Text, Quotations, Mathematical,
+Extended Latin, Symbols, Arrows, and Greek categories.
+
 ### Menubar configuration
 
 ```vue
