@@ -1,6 +1,6 @@
 {
     "name": "@erag/text-editor-vue",
-    "version": "0.2.48",
+    "version": "0.2.49",
     "description": "A dependency-free Vue 3 rich text editor built with native browser APIs, flexible configuration, and full TypeScript support.",
     "type": "module",
     "license": "MIT",
@@ -42,8 +42,8 @@
     "scripts": {
         "dev": "vite build --watch",
         "build": "vite build",
-        "lint": "prettier --write src eslint.config.js vite.config.ts package.json README.md && eslint src vite.config.ts --fix",
-        "lint:check": "prettier --check src eslint.config.js vite.config.ts package.json README.md && eslint src vite.config.ts",
+        "lint": "prettier --write src eslint.config.js vite.config.ts package.json \"*.md\" \".github/**/*.md\" && eslint src vite.config.ts --fix",
+        "lint:check": "prettier --check src eslint.config.js vite.config.ts package.json \"*.md\" \".github/**/*.md\" && eslint src vite.config.ts",
         "typecheck": "tsc --noEmit -p tsconfig.json",
         "prepublishOnly": "npm run lint:check && npm run typecheck && npm run build"
     },

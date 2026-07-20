@@ -16,6 +16,7 @@ Steps to reproduce the behavior.
 What you expected to happen.
 
 **Environment**
+
 - Browser:
 - Vue version:
 - Package version:
