@@ -26,4 +26,4 @@ npm run format    # format code
 
 ## License
 
-Contributions are licensed under the [MIT License](../LICENSE).
+Contributions are licensed under the [MIT License](LICENSE).
