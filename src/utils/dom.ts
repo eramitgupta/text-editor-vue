@@ -1,8 +1,9 @@
 export function closestElement<T extends keyof HTMLElementTagNameMap>(
     root: HTMLElement,
     tag: T,
+    range?: Range | null,
 ): HTMLElementTagNameMap[T] | null {
-    const current = window.getSelection()?.anchorNode;
+    const current = range?.startContainer ?? window.getSelection()?.anchorNode;
     const element = current instanceof Element ? current : current?.parentElement;
     const closest = element?.closest(tag) as HTMLElementTagNameMap[T] | null;
     return closest && root.contains(closest) ? closest : null;

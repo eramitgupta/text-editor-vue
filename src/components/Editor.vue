@@ -129,7 +129,10 @@ const shellStyle = computed(() => ({
     maxHeight: cssUnit(config.value.maxHeight),
     '--erag-editor-height': cssUnit(editorResize.currentHeight.value ?? config.value.height),
 }));
-const { initial: linkInitial, getSelectedAnchor } = useLinkInitial(editor.root);
+const { initial: linkInitial, getSelectedAnchor } = useLinkInitial(
+    editor.root,
+    selection.savedRange,
+);
 
 watch(
     () => props.modelValue,
