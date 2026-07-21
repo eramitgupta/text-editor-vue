@@ -1,6 +1,6 @@
 {
     "name": "@erag/text-editor-vue",
-    "version": "0.2.70",
+    "version": "0.0.1",
     "description": "A modern dependency-free Vue 3 rich text editor (WYSIWYG) built with native browser APIs. Supports TypeScript, mentions, merge tags, templates, image upload, tables, HTML editing, and customizable toolbars.",
     "type": "module",
     "license": "MIT",
@@ -15,7 +15,7 @@
     "bugs": {
         "url": "https://github.com/eramitgupta/text-editor-vue/issues"
     },
-    "homepage": "https://github.com/eramitgupta/text-editor-vue#readme",
+    "homepage": "https://erag.in/text-editor-vue/index.html",
     "keywords": [
         "vue",
         "vue3",
