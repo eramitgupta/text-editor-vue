@@ -4,6 +4,7 @@ import './styles/menus.css';
 import './styles/dialogs.css';
 import './styles/mentions.css';
 import './styles/image-resize.css';
+import './styles/image-upload.css';
 import './styles/merge-tags.css';
 import './styles/templates.css';
 
@@ -19,6 +20,8 @@ export type {
     EditorProps,
     EditorToolbarGroup,
     ImageBlobInfo,
+    ImageDeleteInfo,
+    ImagesDeleteHandler,
     ImagesUploadHandler,
     MentionConfig,
     MentionItem,

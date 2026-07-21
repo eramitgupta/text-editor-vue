@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted } from 'vue';
 import type { MergeTagItem } from '../../types';
+import { formatMergeTagValue } from '../../utils/mergeTag';
 import EditorIcon from '../icons/EditorIcon.vue';
 
 const props = defineProps<{
@@ -15,7 +16,7 @@ const emit = defineEmits<{
 const groups = computed(() => {
     const groupedItems = new Map<string, MergeTagItem[]>();
     for (const item of props.items) {
-        const group = item.group?.trim() || 'General';
+        const group = item.group?.trim() ?? '';
         const items = groupedItems.get(group) ?? [];
         items.push(item);
         groupedItems.set(group, items);
@@ -58,7 +59,12 @@ onBeforeUnmount(() => document.removeEventListener('keydown', keydown));
                 :key="group.label"
                 class="erag-merge-tag-sidebar__group"
             >
-                <h3 class="erag-merge-tag-sidebar__group-title">{{ group.label }}</h3>
+                <h3
+                    v-if="group.label"
+                    class="erag-merge-tag-sidebar__group-title"
+                >
+                    {{ group.label }}
+                </h3>
                 <div class="erag-merge-tag-sidebar__list">
                     <button
                         v-for="item in group.items"
@@ -69,8 +75,9 @@ onBeforeUnmount(() => document.removeEventListener('keydown', keydown));
                         @mousedown.prevent
                         @click="emit('select', item)"
                     >
-                        <span class="erag-merge-tag-sidebar__item-label">{{ item.label }}</span>
-                        <span class="erag-merge-tag-sidebar__item-value">{{ item.value }}</span>
+                        <span class="erag-merge-tag-sidebar__item-value">
+                            {{ formatMergeTagValue(item.value) }}
+                        </span>
                     </button>
                 </div>
             </section>

@@ -118,7 +118,7 @@ export const TOOLBAR_ITEMS: Record<EditorToolbarItemName, ToolbarItemDefinition>
         name: 'image',
         label: 'Insert image',
         icon: 'image',
-        dialog: 'image',
+        command: 'imageUpload',
         plugin: 'image',
     },
     media: {

@@ -96,6 +96,7 @@ function insert(): void {
                             type="button"
                             class="erag-template-dialog__item"
                             :class="{ 'erag-is-active': item.id === selectedId }"
+                            :aria-pressed="item.id === selectedId"
                             @click="selectedId = item.id"
                             @dblclick="emit('insert', item)"
                         >

@@ -94,7 +94,7 @@ export const MENU_DEFINITIONS: MenuDefinition[] = [
         label: 'Insert',
         icon: 'insert',
         items: [
-            { id: 'image', label: 'Image', dialog: 'image', plugin: 'image' },
+            { id: 'image', label: 'Image', command: 'imageUpload', plugin: 'image' },
             { id: 'link', label: 'Link', dialog: 'link', plugin: 'link' },
             { id: 'media', label: 'Media', dialog: 'media', plugin: 'media' },
             { id: 'table', label: 'Table', dialog: 'table', plugin: 'table' },

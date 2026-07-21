@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue';
 import { TOOLBAR_ITEMS, parseToolbar } from '../config/toolbarConfig';
 import { useToolbarOverflow } from '../composables/useToolbarOverflow';
 import type {
@@ -25,6 +25,9 @@ defineSlots<{ start(): unknown; end(): unknown }>();
 const container = useTemplateRef<HTMLElement>('container');
 const open = shallowRef<string | null>(null);
 const selectedCase = shallowRef<TextCaseMode | null>(null);
+const popoverAnchor = shallowRef<HTMLElement | null>(null);
+const popoverLeft = shallowRef(8);
+const popoverStyle = computed(() => ({ left: `${popoverLeft.value}px` }));
 const groups = computed(() =>
     parseToolbar(props.toolbar)
         .map((group) => ({
@@ -43,14 +46,33 @@ const overflow = computed(() => groups.value.slice(visibleCount.value));
 function available(item: ToolbarItemDefinition): boolean {
     return !item.plugin || props.config.plugins.includes(item.plugin as never);
 }
-function activate(item: ToolbarItemDefinition): void {
+function positionPopover(): void {
+    const toolbar = container.value;
+    const anchor = popoverAnchor.value;
+    const popover = toolbar?.querySelector<HTMLElement>('.erag-toolbar__popover');
+    if (!toolbar || !anchor || !popover) return;
+
+    const toolbarRect = toolbar.getBoundingClientRect();
+    const anchorRect = anchor.getBoundingClientRect();
+    const inset = 8;
+    const preferredLeft = anchorRect.left - toolbarRect.left;
+    const maximumLeft = Math.max(inset, toolbarRect.width - popover.offsetWidth - inset);
+    popoverLeft.value = Math.min(Math.max(preferredLeft, inset), maximumLeft);
+}
+function togglePopover(name: string, event: MouseEvent): void {
+    const willOpen = open.value !== name;
+    open.value = willOpen ? name : null;
+    popoverAnchor.value = willOpen ? (event.currentTarget as HTMLElement) : null;
+    if (willOpen) void nextTick(positionPopover);
+}
+function activate(item: ToolbarItemDefinition, event: MouseEvent): void {
     if (isDisabled(item)) return;
     if (item.name === 'casechange') {
-        open.value = open.value === 'casechange' ? null : 'casechange';
+        togglePopover('casechange', event);
     } else if (item.command) emit('command', item.command);
     else if (item.dialog) {
         if (item.dialog === 'forecolor' || item.dialog === 'backcolor')
-            open.value = open.value === item.dialog ? null : item.dialog;
+            togglePopover(item.dialog, event);
         else emit('dialog', item.dialog);
     } else if (item.name === 'more') open.value = open.value === 'more' ? null : 'more';
 }
@@ -91,8 +113,14 @@ function chooseColor(type: string, color: string): void {
     emit('command', type, color || (type === 'forecolor' ? '#000000' : 'transparent'));
     open.value = null;
 }
-onMounted(() => document.addEventListener('pointerdown', outside));
-onBeforeUnmount(() => document.removeEventListener('pointerdown', outside));
+onMounted(() => {
+    document.addEventListener('pointerdown', outside);
+    window.addEventListener('resize', positionPopover);
+});
+onBeforeUnmount(() => {
+    document.removeEventListener('pointerdown', outside);
+    window.removeEventListener('resize', positionPopover);
+});
 </script>
 
 <template>
@@ -204,6 +232,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', outside));
         <ColorPalette
             v-if="open === 'forecolor'"
             class="erag-toolbar__popover"
+            :style="popoverStyle"
             :colors="config.textColors"
             current=""
             label="Text color"
@@ -212,6 +241,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', outside));
         <CaseChangeMenu
             v-if="open === 'casechange'"
             class="erag-toolbar__popover"
+            :style="popoverStyle"
             :mode="selectedCase"
             @select="chooseCase"
             @close="open = null"
@@ -219,6 +249,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', outside));
         <ColorPalette
             v-if="open === 'backcolor'"
             class="erag-toolbar__popover"
+            :style="popoverStyle"
             :colors="config.backgroundColors"
             current=""
             label="Background color"

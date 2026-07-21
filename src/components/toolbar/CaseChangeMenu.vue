@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, useTemplateRef } from 'vue';
+import { nextTick, onMounted, shallowRef, useTemplateRef } from 'vue';
 import type { TextCaseMode } from '../../types';
 
 const props = defineProps<{ mode: TextCaseMode | null }>();
@@ -8,6 +8,7 @@ const emit = defineEmits<{
     select: [mode: TextCaseMode];
 }>();
 const root = useTemplateRef<HTMLElement>('root');
+const highlightedMode = shallowRef<TextCaseMode | null>(null);
 const options: { label: string; value: TextCaseMode }[] = [
     { label: 'lowercase', value: 'lowercase' },
     { label: 'UPPERCASE', value: 'uppercase' },
@@ -34,6 +35,19 @@ function keydown(event: KeyboardEvent): void {
     buttons[next]?.focus();
 }
 
+function isHighlighted(mode: TextCaseMode): boolean {
+    return (
+        highlightedMode.value === mode || (highlightedMode.value === null && props.mode === mode)
+    );
+}
+
+function restoreFocusedHighlight(): void {
+    const focused = root.value?.contains(document.activeElement)
+        ? (document.activeElement as HTMLElement).dataset.eragCase
+        : undefined;
+    highlightedMode.value = (focused as TextCaseMode | undefined) ?? null;
+}
+
 onMounted(async () => {
     await nextTick();
     const selector = props.mode ? `[data-erag-case="${props.mode}"]` : 'button';
@@ -48,16 +62,19 @@ onMounted(async () => {
         role="menu"
         aria-label="Change text case"
         @keydown="keydown"
+        @pointerleave="restoreFocusedHighlight"
     >
         <button
             v-for="option in options"
             :key="option.value"
             type="button"
             class="erag-case-menu__item"
-            :class="{ 'erag-is-active': mode === option.value }"
+            :class="{ 'erag-is-active': isHighlighted(option.value) }"
             role="menuitemradio"
             :aria-checked="mode === option.value"
             :data-erag-case="option.value"
+            @focus="highlightedMode = option.value"
+            @pointerenter="highlightedMode = option.value"
             @mousedown.prevent
             @click="emit('select', option.value)"
         >

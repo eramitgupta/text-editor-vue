@@ -3,7 +3,6 @@ import type { EditorDialogsEmits, EditorDialogsProps } from '../types';
 import ColorDialog from './dialogs/ColorDialog.vue';
 import EmojiDialog from './dialogs/EmojiDialog.vue';
 import FindReplaceDialog from './dialogs/FindReplaceDialog.vue';
-import ImageDialog from './dialogs/ImageDialog.vue';
 import InfoDialog from './dialogs/InfoDialog.vue';
 import LinkDialog from './dialogs/LinkDialog.vue';
 import MediaDialog from './dialogs/MediaDialog.vue';
@@ -28,12 +27,6 @@ defineEmits<EditorDialogsEmits>();
         @close="$emit('close')"
         @save="$emit('saveLink', $event)"
         @unlink="$emit('unlink')"
-    />
-    <ImageDialog
-        v-if="dialog === 'image'"
-        :config="config"
-        @close="$emit('close')"
-        @save="$emit('saveImage', $event)"
     />
     <MediaDialog
         v-if="dialog === 'media'"

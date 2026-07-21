@@ -1,5 +1,5 @@
 import { computed, shallowRef, type ComputedRef } from 'vue';
-import { getTextCounts } from '../utils/html';
+import { getPersistentHtml, getPersistentText, getTextCounts } from '../utils/html';
 import { canSanitizeHtml, sanitizeHtml } from '../utils/sanitizer';
 import { restoreSelection, saveSelection } from '../utils/selection';
 import type { EditorCounts, ResolvedEditorInit } from '../types';
@@ -8,11 +8,13 @@ export function useEditor(config: ComputedRef<ResolvedEditorInit>, initialHtml: 
     const root = shallowRef<HTMLElement | null>(null);
     const html = shallowRef(clean(initialHtml));
     const counts = shallowRef<EditorCounts>({ words: 0, characters: 0 });
-    const empty = computed(
-        () =>
-            !(root.value?.textContent ?? '').trim() &&
-            !root.value?.querySelector('img,video,audio,iframe,table,hr'),
-    );
+    const empty = computed(() => {
+        if (!root.value) return !html.value.trim();
+        return (
+            !getPersistentText(root.value).trim() &&
+            !root.value.querySelector('img,video,audio,iframe,table,hr')
+        );
+    });
     function clean(value: string): string {
         return config.value.sanitize && canSanitizeHtml()
             ? sanitizeHtml(value, {
@@ -29,7 +31,7 @@ export function useEditor(config: ComputedRef<ResolvedEditorInit>, initialHtml: 
     }
     function sync(): string {
         if (!root.value) return html.value;
-        html.value = root.value.innerHTML;
+        html.value = getPersistentHtml(root.value);
         updateCounts();
         return html.value;
     }
@@ -48,7 +50,7 @@ export function useEditor(config: ComputedRef<ResolvedEditorInit>, initialHtml: 
         counts.value = root.value ? getTextCounts(root.value) : { words: 0, characters: 0 };
     }
     function getText(): string {
-        return root.value?.textContent ?? '';
+        return root.value ? getPersistentText(root.value) : '';
     }
     return { root, html, counts, empty, clean, connect, sync, setHtml, getText, updateCounts };
 }

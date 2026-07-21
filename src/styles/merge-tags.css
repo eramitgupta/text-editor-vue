@@ -1,5 +1,5 @@
 .erag-editor {
-    --erag-merge-tag-dropdown-width: 220px;
+    --erag-merge-tag-dropdown-width: 190px;
     --erag-merge-tag-active-background: #1677e8;
     --erag-merge-tag-active-color: #ffffff;
     --erag-merge-tag-chip-background: #eef2ff;
@@ -10,7 +10,7 @@
     position: fixed;
     z-index: 1000;
     width: min(var(--erag-merge-tag-dropdown-width), calc(100vw - 24px));
-    max-height: 260px;
+    max-height: 220px;
     overflow: hidden;
     color: #273142;
     background: #ffffff;
@@ -19,15 +19,28 @@
     box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
 }
 .erag-editor .erag-merge-tag-dropdown__list {
-    max-height: 260px;
+    max-height: 220px;
     overflow-y: auto;
+}
+.erag-editor .erag-merge-tag-dropdown__section + .erag-merge-tag-dropdown__section {
+    border-top: 1px solid #edf0f4;
+}
+.erag-editor .erag-merge-tag-dropdown__section-title {
+    display: block;
+    padding: 6px 10px 3px;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 .erag-editor .erag-merge-tag-dropdown__item {
     display: flex;
-    flex-direction: column;
     width: 100%;
-    min-height: 42px;
-    padding: 7px 12px;
+    height: 34px;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: flex-start;
     color: inherit;
     text-align: left;
     cursor: pointer;
@@ -38,22 +51,16 @@
     color: var(--erag-merge-tag-active-color);
     background: var(--erag-merge-tag-active-background);
 }
-.erag-editor .erag-merge-tag-dropdown__label,
-.erag-editor .erag-merge-tag-dropdown__group {
+.erag-editor .erag-merge-tag-dropdown__label {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 .erag-editor .erag-merge-tag-dropdown__label {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
     font-weight: 600;
-}
-.erag-editor .erag-merge-tag-dropdown__group {
-    margin-top: 1px;
-    color: #64748b;
-    font-size: 11px;
-}
-.erag-editor .erag-merge-tag-dropdown__item.erag-is-active .erag-merge-tag-dropdown__group {
-    color: rgb(255 255 255 / 85%);
+    line-height: 1.2;
 }
 .erag-editor .erag-merge-tag-dropdown__empty {
     padding: 16px;
@@ -72,8 +79,9 @@
 }
 .erag-editor .erag-merge-tag {
     display: inline;
-    padding: 1px 5px;
+    padding: 0 3px;
     color: var(--erag-merge-tag-chip-color);
+    font-size: 0.92em;
     white-space: nowrap;
     cursor: default;
     background: var(--erag-merge-tag-chip-background);
@@ -152,10 +160,11 @@
 .erag-editor .erag-merge-tag-sidebar__item {
     display: flex;
     width: 100%;
+    height: 34px;
     min-width: 0;
     align-items: center;
     gap: 10px;
-    padding: 9px 10px;
+    padding: 0 10px;
     color: #273142;
     text-align: left;
     cursor: pointer;
@@ -174,26 +183,17 @@
     color: #9ca3af;
     cursor: not-allowed;
 }
-.erag-editor .erag-merge-tag-sidebar__item-label {
+.erag-editor .erag-merge-tag-sidebar__item-value {
     min-width: 0;
     flex: 1 1 auto;
     overflow: hidden;
-    font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.erag-editor .erag-merge-tag-sidebar__item-value {
-    max-width: 48%;
-    overflow: hidden;
-    color: #64748b;
+    color: inherit;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 11px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-.erag-editor .erag-merge-tag-sidebar__item:hover:not(:disabled) .erag-merge-tag-sidebar__item-value,
-.erag-editor .erag-merge-tag-sidebar__item:focus-visible .erag-merge-tag-sidebar__item-value {
-    color: var(--erag-editor-active-color);
 }
 .erag-editor .erag-merge-tag-sidebar__empty {
     margin: 0;

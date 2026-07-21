@@ -17,7 +17,8 @@ export function detectMergeTagQuery(root: HTMLElement): MergeTagQueryMatch | nul
     const prefixRange = document.createRange();
     prefixRange.selectNodeContents(block);
     prefixRange.setEnd(node, caretOffset);
-    const match = prefixRange.toString().match(MERGE_TAG_PATTERN);
+    const prefix = prefixRange.toString();
+    const match = prefix.match(MERGE_TAG_PATTERN);
     if (!match?.[0] || match[1] === undefined) return null;
     const range = document.createRange();
     if (!setRangeStartBeforeCaret(block, node, caretOffset, match[0].length, range)) {
@@ -49,7 +50,7 @@ export function insertMergeTagAtRange(
         new InputEvent('input', {
             bubbles: true,
             inputType: 'insertReplacementText',
-            data: `{{${item.value}}}`,
+            data: formatMergeTagValue(item.value),
         }),
     );
     return true;
@@ -59,17 +60,15 @@ export function createMergeTagElement(item: MergeTagItem): HTMLSpanElement {
     const element = document.createElement('span');
     element.className = 'erag-merge-tag';
     element.dataset.eragMergeTag = 'true';
-    element.dataset.eragMergeTagValue = item.value;
-    element.dataset.eragMergeTagLabel = item.label;
+    element.dataset.eragMergeTagValue = formatMergeTagValue(item.value);
     element.contentEditable = 'false';
-    element.textContent = `{{${item.value}}}`;
+    element.textContent = formatMergeTagValue(item.value);
     return element;
 }
 
 export function parseMergeTagElement(element: Element): MergeTagItem | null {
     if (!isValidMergeTagElement(element)) return null;
     return {
-        label: element.getAttribute('data-erag-merge-tag-label') ?? '',
         value: element.getAttribute('data-erag-merge-tag-value') ?? '',
     };
 }
@@ -120,9 +119,23 @@ function isValidMergeTagElement(element: Element): boolean {
     return (
         element.matches(MERGE_TAG_SELECTOR) &&
         element.getAttribute('contenteditable') === 'false' &&
-        Boolean(element.getAttribute('data-erag-merge-tag-label')) &&
         Boolean(element.getAttribute('data-erag-merge-tag-value'))
     );
+}
+
+export function normalizeMergeTagValue(value: string): string {
+    const normalized = value.trim();
+    if (normalized.startsWith('{{') && normalized.endsWith('}}')) {
+        return normalized.slice(2, -2).trim();
+    }
+    if (normalized.startsWith('{') && normalized.endsWith('}')) {
+        return normalized.slice(1, -1).trim();
+    }
+    return normalized.replace(/[{}]/gu, '').trim();
+}
+
+export function formatMergeTagValue(value: string): string {
+    return `{{${normalizeMergeTagValue(value)}}}`;
 }
 
 function isBlockedContext(root: HTMLElement, element: HTMLElement | null): boolean {

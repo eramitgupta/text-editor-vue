@@ -8,6 +8,7 @@ import type {
 import {
     detectMergeTagQuery,
     insertMergeTagAtRange,
+    normalizeMergeTagValue,
     removeAdjacentMergeTag,
 } from '../utils/mergeTag';
 import { getCaretRect } from '../utils/selection';
@@ -244,7 +245,7 @@ export function useMergeTags(sources: MergeTagComposableSources, callbacks: Merg
 
 function matchScore(item: MergeTagItem, query: string): number {
     if (!query) return 0;
-    const values = [item.label, item.value, item.group]
+    const values = [normalizeMergeTagValue(item.value), item.group]
         .filter((value): value is string => Boolean(value))
         .map((value) => value.toLocaleLowerCase());
     if (values.some((value) => value.startsWith(query))) return 0;

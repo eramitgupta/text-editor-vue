@@ -1,6 +1,5 @@
 export type EditorDialogName =
     | 'link'
-    | 'image'
     | 'media'
     | 'table'
     | 'special-character'
@@ -18,12 +17,6 @@ export interface LinkValue {
     text: string;
     title: string;
     target: '_self' | '_blank';
-}
-export interface ImageValue {
-    src: string;
-    alt: string;
-    width: string;
-    height: string;
 }
 export interface MediaValue {
     type: 'video' | 'audio' | 'iframe';
@@ -48,7 +41,6 @@ export interface EditorDialogsEmits {
     close: [];
     saveLink: [value: LinkValue];
     unlink: [];
-    saveImage: [value: ImageValue];
     saveMedia: [value: MediaValue];
     saveTable: [rows: number, columns: number];
     selectCharacter: [value: string];

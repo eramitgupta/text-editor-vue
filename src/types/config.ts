@@ -53,6 +53,7 @@ export interface DateTimeFormatOption {
 }
 
 import type { ImagesUploadHandler } from './upload';
+import type { ImagesDeleteHandler } from './image';
 import type { MentionConfig, ResolvedMentionConfig } from './mention';
 import type { MergeTagConfig, ResolvedMergeTagConfig } from './mergeTag';
 import type { EditorTemplatesConfig, ResolvedEditorTemplatesConfig } from './template';
@@ -90,6 +91,7 @@ export interface EditorInit {
     uploadCredentials?: RequestCredentials;
     imagesUploadUrl?: string;
     imagesUploadHandler?: ImagesUploadHandler;
+    imagesDeleteHandler?: ImagesDeleteHandler;
     resolveUploadedImageUrl?: (response: unknown) => string | Promise<string>;
     automaticUploads?: boolean;
     pasteImages?: boolean;
@@ -116,6 +118,7 @@ export interface EditorInit {
     line_height_formats?: LineHeightOption[];
     images_upload_url?: string;
     images_upload_handler?: ImagesUploadHandler;
+    images_delete_handler?: ImagesDeleteHandler;
     automatic_uploads?: boolean;
     relative_urls?: boolean;
     remove_script_host?: boolean;
@@ -130,6 +133,7 @@ export type ResolvedEditorInit = Required<
         | 'width'
         | 'imagesUploadUrl'
         | 'imagesUploadHandler'
+        | 'imagesDeleteHandler'
         | 'resolveUploadedImageUrl'
         | 'mentions'
         | 'mergeTags'
@@ -140,6 +144,7 @@ export type ResolvedEditorInit = Required<
         | 'line_height_formats'
         | 'images_upload_url'
         | 'images_upload_handler'
+        | 'images_delete_handler'
         | 'automatic_uploads'
         | 'relative_urls'
         | 'remove_script_host'
@@ -153,6 +158,7 @@ export type ResolvedEditorInit = Required<
         | 'width'
         | 'imagesUploadUrl'
         | 'imagesUploadHandler'
+        | 'imagesDeleteHandler'
         | 'resolveUploadedImageUrl'
     > & {
         mentions: ResolvedMentionConfig;

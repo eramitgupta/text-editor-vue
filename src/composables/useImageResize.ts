@@ -7,7 +7,13 @@ import {
     type ComputedRef,
     type Ref,
 } from 'vue';
-import type { ImageAlignment, ImageResizeBox, ImageResizeHandle } from '../types';
+import type {
+    ImageAlignment,
+    ImageDeleteInfo,
+    ImageResizeBox,
+    ImageResizeHandle,
+    ImagesDeleteHandler,
+} from '../types';
 
 const MINIMUM_IMAGE_SIZE = 40;
 
@@ -16,10 +22,13 @@ export function useImageResize(
     container: Ref<HTMLElement | null>,
     locked: ComputedRef<boolean>,
     changed: () => void,
+    removed: (image: ImageDeleteInfo) => void,
 ) {
     const selectedImage = shallowRef<HTMLImageElement | null>(null);
     const box = shallowRef<ImageResizeBox | null>(null);
     const alignment = shallowRef<ImageAlignment | null>(null);
+    const deleting = shallowRef(false);
+    const deleteError = shallowRef('');
     const activeCommands = computed<Record<string, boolean>>(() => ({
         alignleft: alignment.value === 'alignleft',
         aligncenter: alignment.value === 'aligncenter',
@@ -30,12 +39,14 @@ export function useImageResize(
     let frame = 0;
 
     function selectFromEvent(event: MouseEvent): void {
+        if (deleting.value) return;
         if (locked.value || !(event.target instanceof HTMLImageElement)) {
             clear();
             return;
         }
         if (!root.value?.contains(event.target)) return;
         selectedImage.value = event.target;
+        deleteError.value = '';
         alignment.value = getImageAlignment(event.target);
         observeSelectedImage();
         refresh();
@@ -66,7 +77,7 @@ export function useImageResize(
     function resizeStart(event: PointerEvent, handle: ImageResizeHandle): void {
         const image = selectedImage.value;
         const editorRoot = root.value;
-        if (!image || !editorRoot || locked.value) return;
+        if (!image || !editorRoot || locked.value || deleting.value) return;
         event.preventDefault();
         event.stopPropagation();
         const rect = image.getBoundingClientRect();
@@ -111,7 +122,7 @@ export function useImageResize(
 
     function executeCommand(id: string): boolean {
         const image = selectedImage.value;
-        if (!image || !isImageAlignment(id)) return false;
+        if (!image || deleting.value || !isImageAlignment(id)) return false;
         image.style.display = 'block';
         image.style.marginLeft = id === 'alignright' ? 'auto' : id === 'aligncenter' ? 'auto' : '0';
         image.style.marginRight = id === 'alignleft' ? 'auto' : id === 'aligncenter' ? 'auto' : '0';
@@ -121,12 +132,35 @@ export function useImageResize(
         return true;
     }
 
+    async function deleteSelected(handler?: ImagesDeleteHandler): Promise<boolean> {
+        const image = selectedImage.value;
+        if (!image || !image.isConnected || locked.value || deleting.value) return false;
+        deleting.value = true;
+        deleteError.value = '';
+        const info = getDeleteInfo(image);
+        try {
+            if (handler) await handler(info);
+            if (selectedImage.value !== image || !image.isConnected) return false;
+            image.remove();
+            clear();
+            changed();
+            removed(info);
+            return true;
+        } catch {
+            deleteError.value = 'Unable to delete image from server';
+            return false;
+        } finally {
+            deleting.value = false;
+        }
+    }
+
     function clear(): void {
         cancelAnimationFrame(frame);
         observer?.disconnect();
         selectedImage.value = null;
         alignment.value = null;
         box.value = null;
+        deleteError.value = '';
     }
 
     function observeSelectedImage(): void {
@@ -149,7 +183,28 @@ export function useImageResize(
         document.removeEventListener('scroll', refresh, true);
     });
 
-    return { box, activeCommands, selectFromEvent, resizeStart, executeCommand, refresh, clear };
+    return {
+        box,
+        activeCommands,
+        deleting,
+        deleteError,
+        selectFromEvent,
+        resizeStart,
+        executeCommand,
+        deleteSelected,
+        refresh,
+        clear,
+    };
+}
+
+function getDeleteInfo(image: HTMLImageElement): ImageDeleteInfo {
+    const rect = image.getBoundingClientRect();
+    return {
+        src: image.getAttribute('src') ?? '',
+        alt: image.getAttribute('alt') ?? '',
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+    };
 }
 
 function getImageAlignment(image: HTMLImageElement): ImageAlignment {

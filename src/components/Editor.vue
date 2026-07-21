@@ -20,6 +20,7 @@ import { useEditorSelection } from '../composables/useEditorSelection';
 import { useEditorUpload } from '../composables/useEditorUpload';
 import { useFullscreen } from '../composables/useFullscreen';
 import { useImageResize } from '../composables/useImageResize';
+import { useInlineImageUpload } from '../composables/useInlineImageUpload';
 import { useLinkInitial } from '../composables/useLinkInitial';
 import { useMentions } from '../composables/useMentions';
 import { useMergeTags } from '../composables/useMergeTags';
@@ -29,14 +30,11 @@ import type {
     EditorDialogName,
     EditorEmits,
     EditorInstance,
+    EditorSlots,
     EditorTemplateItem,
     EditorProps,
-    ImageValue,
     LinkValue,
     MediaValue,
-    MentionErrorSlotProps,
-    MentionItemSlotProps,
-    MentionQuerySlotProps,
     MenuItemDefinition,
 } from '../types';
 import { formatDateTime, mergeDateTimeFormats } from '../utils/dateTime';
@@ -52,6 +50,7 @@ import MentionHoverCard from './mentions/MentionHoverCard.vue';
 import MergeTagDropdown from './merge-tags/MergeTagDropdown.vue';
 import MergeTagSidebar from './merge-tags/MergeTagSidebar.vue';
 import ImageResizeOverlay from './images/ImageResizeOverlay.vue';
+import InlineImageUploadPortal from './images/InlineImageUploadPortal.vue';
 
 defineOptions({ inheritAttrs: false });
 const props = withDefaults(defineProps<EditorProps>(), {
@@ -61,18 +60,7 @@ const props = withDefaults(defineProps<EditorProps>(), {
     ariaLabel: 'Rich text editor',
 });
 const emit = defineEmits<EditorEmits>();
-defineSlots<{
-    'toolbar-start'(): unknown;
-    'toolbar-end'(): unknown;
-    'menubar-end'(): unknown;
-    'statusbar-start'(): unknown;
-    'statusbar-end'(): unknown;
-    'mention-item'(props: MentionItemSlotProps): unknown;
-    'mention-loading'(props: MentionQuerySlotProps): unknown;
-    'mention-empty'(props: MentionQuerySlotProps): unknown;
-    'mention-error'(props: MentionErrorSlotProps): unknown;
-    empty(): unknown;
-}>();
+defineSlots<EditorSlots>();
 const config = useEditorConfig(() => props.init);
 const editor = useEditor(config, props.modelValue);
 const history = useEditorHistory(editor.root);
@@ -86,9 +74,16 @@ const lastPublished = shallowRef(props.modelValue);
 const { toggle: toggleFullscreen } = useFullscreen(shell);
 const { upload: uploadImage, cancel: cancelImageUpload } = useEditorUpload(config);
 const locked = computed(() => props.disabled || props.readonly || config.value.readonly);
+const inlineImageUpload = useInlineImageUpload(editor.root, config, locked, syncInput);
 const editorResize = useEditorResize(shell, config, locked, (height) => emit('resize', { height }));
 const imageResizeLocked = computed(() => locked.value || !config.value.imageResize);
-const imageResize = useImageResize(editor.root, contentWrap, imageResizeLocked, syncInput);
+const imageResize = useImageResize(
+    editor.root,
+    contentWrap,
+    imageResizeLocked,
+    syncInput,
+    (image) => emit('image-remove', image),
+);
 const menubar = computed(() => config.value.menubar);
 const toolbar = computed(() => config.value.toolbar);
 const statusbar = computed(() => config.value.statusbar);
@@ -141,6 +136,7 @@ watch(
     (value) => {
         lastPublished.value = value;
         if (value !== editor.sync()) {
+            inlineImageUpload.discard();
             editor.setHtml(value, true);
             history.reset();
         }
@@ -189,6 +185,14 @@ function restoreAndRun(id: string, value?: string): void {
     }
     if (imageResize.executeCommand(id)) return;
     selection.restore();
+    if (id === 'imageUpload') {
+        void inlineImageUpload.open();
+        return;
+    }
+    if (inlineImageUpload.isOpen.value) {
+        void inlineImageUpload.close().then(() => restoreAndRun(id, value));
+        return;
+    }
     if (id === 'insertMergeTag') {
         const item = config.value.mergeTags.items.find((entry) => entry.value === value);
         if (item) mergeTags.insert(item);
@@ -221,6 +225,10 @@ function restoreAndRun(id: string, value?: string): void {
 }
 function openDialog(name: string): void {
     if (locked.value && !['preview', 'source', 'shortcuts', 'about'].includes(name)) return;
+    if (inlineImageUpload.isOpen.value) {
+        void inlineImageUpload.close().then(() => openDialog(name));
+        return;
+    }
     selection.save();
     if (name === 'forecolor' || name === 'backcolor') {
         dialogMode.value = name;
@@ -259,19 +267,6 @@ function saveLink(value: LinkValue): void {
 function unlink(): void {
     selection.restore();
     document.execCommand('unlink', false);
-    syncInput();
-    closeDialog();
-}
-function saveImage(value: ImageValue): void {
-    if (!editor.root.value) return;
-    selection.restore();
-    const inserted = insertImage(
-        editor.root.value,
-        value,
-        config.value.relativeUrls,
-        config.value.imageDefaultWidth,
-    );
-    if (!inserted) return;
     syncInput();
     closeDialog();
 }
@@ -427,6 +422,7 @@ function getHtml(): string {
     return editor.sync();
 }
 function setHtml(value: string): void {
+    inlineImageUpload.discard();
     editor.setHtml(value, false);
     syncInput();
 }
@@ -462,7 +458,6 @@ function openSourceCode(): void {
 function openPreview(): void {
     openDialog('preview');
 }
-const getRootElement = (): HTMLElement | null => editor.root.value;
 defineExpose<EditorInstance>({
     focus,
     blur,
@@ -477,7 +472,7 @@ defineExpose<EditorInstance>({
     redo,
     openSourceCode,
     openPreview,
-    getRootElement,
+    getRootElement: () => editor.root.value,
 });
 onMounted(() => document.addEventListener('selectionchange', selectionChanged));
 onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionChanged));
@@ -569,10 +564,14 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
             <ImageResizeOverlay
                 v-if="imageResize.box.value"
                 :box="imageResize.box.value"
+                :deleting="imageResize.deleting.value"
+                :delete-error="imageResize.deleteError.value"
+                :delete-from-server="Boolean(config.imagesDeleteHandler)"
                 @resize-start="imageResize.resizeStart"
+                @delete="imageResize.deleteSelected(config.imagesDeleteHandler)"
             />
             <div
-                v-if="editor.empty.value && $slots.empty"
+                v-if="editor.empty.value && !inlineImageUpload.isOpen.value && $slots.empty"
                 class="erag-editor__empty"
             >
                 <slot name="empty" />
@@ -586,6 +585,15 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
                 @select="mergeTagSidebar.select"
             />
         </div>
+        <InlineImageUploadPortal
+            :target="inlineImageUpload.target.value"
+            :config="config"
+            :state="inlineImageUpload.state"
+            :error="inlineImageUpload.message.value"
+            @file="inlineImageUpload.uploadFile"
+            @insert-url="inlineImageUpload.insertUrl"
+            @close="inlineImageUpload.close"
+        />
         <EditorStatusBar
             v-if="statusbar"
             :path="selection.state.value.path"
@@ -681,7 +689,6 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
         @close="closeDialog"
         @save-link="saveLink"
         @unlink="unlink"
-        @save-image="saveImage"
         @save-media="saveMedia"
         @save-table="saveTable"
         @select-character="insertCharacter"

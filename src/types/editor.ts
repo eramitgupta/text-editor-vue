@@ -1,4 +1,19 @@
 import type { EditorInit } from './config';
+import type { MentionErrorSlotProps, MentionItemSlotProps, MentionQuerySlotProps } from './mention';
+
+export interface EditorSlots {
+    'toolbar-start'(): unknown;
+    'toolbar-end'(): unknown;
+    'menubar-end'(): unknown;
+    'statusbar-start'(): unknown;
+    'statusbar-end'(): unknown;
+    'mention-item'(props: MentionItemSlotProps): unknown;
+    'mention-loading'(props: MentionQuerySlotProps): unknown;
+    'mention-empty'(props: MentionQuerySlotProps): unknown;
+    'mention-error'(props: MentionErrorSlotProps): unknown;
+    empty(): unknown;
+}
+
 export interface EditorProps {
     modelValue?: string;
     init?: EditorInit;

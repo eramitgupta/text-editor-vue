@@ -67,11 +67,15 @@
     border: 0;
     border-radius: 5px;
 }
-.erag-template-dialog__item:hover,
-.erag-template-dialog__item:focus-visible,
 .erag-template-dialog__item.erag-is-active {
     color: #ffffff;
     background: #2563eb;
+    outline: none;
+}
+.erag-template-dialog__item:hover:not(.erag-is-active),
+.erag-template-dialog__item:focus-visible:not(.erag-is-active) {
+    color: #1d4ed8;
+    background: #eff6ff;
     outline: none;
 }
 .erag-template-dialog__item-label,
@@ -89,10 +93,13 @@
     color: #64748b;
     font-size: 11px;
 }
-.erag-template-dialog__item:hover .erag-template-dialog__item-description,
-.erag-template-dialog__item:focus-visible .erag-template-dialog__item-description,
 .erag-template-dialog__item.erag-is-active .erag-template-dialog__item-description {
     color: rgb(255 255 255 / 82%);
+}
+.erag-template-dialog__item:hover:not(.erag-is-active) .erag-template-dialog__item-description,
+.erag-template-dialog__item:focus-visible:not(.erag-is-active)
+    .erag-template-dialog__item-description {
+    color: #3b82f6;
 }
 .erag-template-dialog__preview {
     overflow-y: auto;

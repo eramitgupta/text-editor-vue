@@ -1,7 +1,25 @@
 import type { TextCountStatistics } from '../types';
 
+const TRANSIENT_CONTENT_SELECTOR = '[data-erag-transient="true"]';
+
+export function getPersistentHtml(root: HTMLElement): string {
+    if (!root.querySelector(TRANSIENT_CONTENT_SELECTOR)) return root.innerHTML;
+    const clone = root.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll(TRANSIENT_CONTENT_SELECTOR).forEach((element) => element.remove());
+    return clone.innerHTML;
+}
+
+export function getPersistentText(root: HTMLElement): string {
+    if (!root.querySelector(TRANSIENT_CONTENT_SELECTOR)) return root.textContent ?? '';
+    const clone = root.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll(TRANSIENT_CONTENT_SELECTOR).forEach((element) => element.remove());
+    return clone.textContent ?? '';
+}
+
 export function getTextCounts(root: HTMLElement): { words: number; characters: number } {
-    const text = (root.textContent ?? '').replace(/\u00a0/g, ' ').trim();
+    const text = getPersistentText(root)
+        .replace(/\u00a0/g, ' ')
+        .trim();
     return { words: text ? text.split(/\s+/u).length : 0, characters: text.length };
 }
 export function getDetailedTextCounts(value: string): TextCountStatistics {

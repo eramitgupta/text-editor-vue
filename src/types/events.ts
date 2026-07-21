@@ -1,6 +1,7 @@
 import type { MentionRemoveEvent, MentionSearchEvent, MentionSelectEvent } from './mention';
 import type { MergeTagRemoveEvent, MergeTagSelectEvent } from './mergeTag';
 import type { TemplateInsertEvent } from './template';
+import type { ImageDeleteInfo } from './image';
 
 export interface EditorEmits {
     (event: 'update:modelValue', value: string): void;
@@ -19,4 +20,5 @@ export interface EditorEmits {
     (event: 'merge-tag-select', value: MergeTagSelectEvent): void;
     (event: 'merge-tag-remove', value: MergeTagRemoveEvent): void;
     (event: 'template-insert', value: TemplateInsertEvent): void;
+    (event: 'image-remove', value: ImageDeleteInfo): void;
 }

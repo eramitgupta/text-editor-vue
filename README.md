@@ -371,17 +371,21 @@ Pass dynamic merge tags through `init`. Typing the fixed `{{` trigger opens a fi
 at the caret. When merge tags are enabled, a dynamic **Merge tag** entry appears in the
 top menubar and opens a scrollable right sidebar grouped by the configured `group` values.
 When using an explicit menubar array, include `'merge-tags'` where this entry should appear.
+Each item requires only `value`; `group` is optional. Items without a group are shown as a
+standalone list, while grouped items appear under their group heading. Pass complete wrapped values;
+the editor preserves and inserts them with two brace pairs, for example `{{amit}}` or
+`{{call.date}}`.
 
 ```ts
 import { computed } from 'vue';
 import type { EditorInit, MergeTagItem } from '@erag/text-editor-vue';
 
 const mergeTagItems = computed<MergeTagItem[]>(() => [
-    { label: 'Call date', value: 'call.date', group: 'Client' },
-    { label: 'Client name', value: 'client.name', group: 'Client' },
-    { label: 'Submission date', value: 'submission.date', group: 'Proposal' },
-    { label: 'Consultant', value: 'consultant.name', group: 'Consultant' },
-    { label: 'Salutation', value: 'client.salutation', group: 'Client' },
+    { value: '{{amit}}' },
+    { value: '{{gupta}}' },
+    { value: '{{Call date}}', group: 'Client' },
+    { value: '{{call.date}}', group: 'Client' },
+    { value: '{{Submission date}}', group: 'Proposal' },
 ]);
 
 const editorConfig = computed<EditorInit>(() => ({
@@ -440,6 +444,10 @@ sanitized on the server.
 ## Image uploads
 
 Uploads are never sent unless the consumer supplies `imagesUploadHandler` or `imagesUploadUrl`.
+Choosing **Image** from the toolbar or Insert menu opens an inline upload card at the saved caret
+position instead of a modal. Drop an image onto the card, choose a file from the device, or switch
+to the URL field. The card is temporary UI and is never included in `modelValue`; it is replaced by
+the uploaded image only after validation and upload succeed.
 
 Inserted images default to a maximum width of `640` pixels while preserving their natural
 aspect ratio. Click an image in the editable canvas to display its resize outline, then drag
@@ -518,9 +526,58 @@ const init: EditorInit = {
 
 URL uploads use native Fetch and `AbortController`. A custom handler receives a progress callback; Fetch itself does not expose upload progress in current browsers, so URL uploads show an indeterminate loading state until completion.
 
+### Delete an image from the server
+
+Click an image to show its resize outline and top-right delete button. When
+`imagesDeleteHandler` is configured, the editor waits for the handler to finish before removing the
+image from the document. If the request fails, the image remains in the editor and the delete
+tooltip displays an error. Without a handler, the button removes only the editor HTML.
+
+```ts
+import type { EditorInit } from '@erag/text-editor-vue';
+
+const init: EditorInit = {
+    imagesDeleteHandler: async (image) => {
+        const response = await fetch('/editor/images', {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: image.src }),
+        });
+
+        if (!response.ok) throw new Error('Image deletion failed.');
+    },
+};
+```
+
+The callback receives `src`, `alt`, rendered `width`, and rendered `height`. The snake-case
+`images_delete_handler` alias is also normalized for compatibility.
+
+The editor also emits `image-remove` once the image has been removed successfully:
+
+```vue
+<script setup lang="ts">
+import type { ImageDeleteInfo } from '@erag/text-editor-vue';
+
+function handleImages(image: ImageDeleteInfo): void {
+    console.log(image.src);
+}
+</script>
+
+<template>
+    <Editor
+        v-model="content"
+        :init="init"
+        @image-remove="handleImages"
+    />
+</template>
+```
+
 ## Events
 
-`Editor` emits `update:modelValue`, `click`, `focus`, `blur`, `input`, `change`, `keydown`, `paste`, `ready`, `selection-change`, `resize`, `mention-search`, `mention-select`, and `mention-remove`. `change` is emitted on blur only when HTML changed; model updates are emitted only for actual editor changes.
+`Editor` emits `update:modelValue`, `click`, `focus`, `blur`, `input`, `change`, `keydown`, `paste`, `ready`, `selection-change`, `resize`, `image-remove`, `mention-search`, `mention-select`, and `mention-remove`. `change` is emitted on blur only when HTML changed; model updates are emitted only for actual editor changes.
 
 ## Exposed methods
 
@@ -532,7 +589,7 @@ Optional named slots are `toolbar-start`, `toolbar-end`, `menubar-end`, `statusb
 
 ## TypeScript exports
 
-The package exports `EditorInit`, `EditorInstance`, `EditorProps`, `EditorEmits`, `EditorMenuName`, `EditorPluginName`, `EditorToolbarGroup`, `ImagesUploadHandler`, `ImageBlobInfo`, `MentionConfig`, `MentionItem`, `MentionSearchEvent`, `MentionSelectEvent`, and `MentionRemoveEvent`. The build emits ESM and declaration files and remains tree-shakable.
+The package exports `EditorInit`, `EditorInstance`, `EditorProps`, `EditorEmits`, `EditorMenuName`, `EditorPluginName`, `EditorToolbarGroup`, `ImagesUploadHandler`, `ImagesDeleteHandler`, `ImageBlobInfo`, `ImageDeleteInfo`, `MentionConfig`, `MentionItem`, `MentionSearchEvent`, `MentionSelectEvent`, and `MentionRemoveEvent`. The build emits ESM and declaration files and remains tree-shakable.
 
 ## Security
 

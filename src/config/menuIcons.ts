@@ -10,6 +10,7 @@ const COMMAND_ICONS: Record<string, string> = {
     paste: 'paste',
     pasteText: 'paste',
     selectall: 'select-all',
+    imageUpload: 'image',
     fullscreen: 'fullscreen',
     hr: 'horizontal-rule',
     anchor: 'anchor',

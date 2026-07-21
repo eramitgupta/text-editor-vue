@@ -11,6 +11,7 @@ const ALIASES = {
     line_height_formats: 'lineHeightFormats',
     images_upload_url: 'imagesUploadUrl',
     images_upload_handler: 'imagesUploadHandler',
+    images_delete_handler: 'imagesDeleteHandler',
     automatic_uploads: 'automaticUploads',
     relative_urls: 'relativeUrls',
     remove_script_host: 'removeScriptHost',

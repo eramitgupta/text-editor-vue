@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, useId, useTemplateRef, type CSSProperties } from 'vue';
 import type { MergeTagItem } from '../../types';
+import { formatMergeTagValue } from '../../utils/mergeTag';
 
 const props = defineProps<{
     items: MergeTagItem[];
@@ -20,6 +21,16 @@ const activeId = computed(() =>
         ? `erag-merge-tag-option-${instanceId}-${props.activeIndex}`
         : undefined,
 );
+const sections = computed(() => {
+    const groupedItems = new Map<string, { item: MergeTagItem; index: number }[]>();
+    props.items.forEach((item, index) => {
+        const group = item.group?.trim() ?? '';
+        const entries = groupedItems.get(group) ?? [];
+        entries.push({ item, index });
+        groupedItems.set(group, entries);
+    });
+    return [...groupedItems].map(([label, entries]) => ({ label, entries }));
+});
 
 onMounted(() => {
     if (root.value) emit('ready', root.value);
@@ -45,26 +56,36 @@ onMounted(() => {
             v-if="items.length"
             class="erag-merge-tag-dropdown__list"
         >
-            <button
-                v-for="(item, index) in items"
-                :id="`erag-merge-tag-option-${instanceId}-${index}`"
-                :key="item.value"
-                type="button"
-                class="erag-merge-tag-dropdown__item"
-                :class="{ 'erag-is-active': index === activeIndex }"
-                role="option"
-                :aria-selected="index === activeIndex"
-                tabindex="-1"
-                @pointerenter="emit('activate', index)"
-                @pointerdown.prevent="emit('select', item)"
+            <div
+                v-for="section in sections"
+                :key="section.label || 'ungrouped'"
+                class="erag-merge-tag-dropdown__section"
+                role="group"
+                :aria-label="section.label || 'Merge tags'"
             >
-                <span class="erag-merge-tag-dropdown__label">{{ item.label }}</span>
                 <span
-                    v-if="item.group"
-                    class="erag-merge-tag-dropdown__group"
-                    >{{ item.group }}</span
+                    v-if="section.label"
+                    class="erag-merge-tag-dropdown__section-title"
+                    >{{ section.label }}</span
                 >
-            </button>
+                <button
+                    v-for="entry in section.entries"
+                    :id="`erag-merge-tag-option-${instanceId}-${entry.index}`"
+                    :key="`${entry.item.value}-${entry.index}`"
+                    type="button"
+                    class="erag-merge-tag-dropdown__item"
+                    :class="{ 'erag-is-active': entry.index === activeIndex }"
+                    role="option"
+                    :aria-selected="entry.index === activeIndex"
+                    tabindex="-1"
+                    @pointerenter="emit('activate', entry.index)"
+                    @pointerdown.prevent="emit('select', entry.item)"
+                >
+                    <span class="erag-merge-tag-dropdown__label">
+                        {{ formatMergeTagValue(entry.item.value) }}
+                    </span>
+                </button>
+            </div>
         </div>
         <div
             v-else

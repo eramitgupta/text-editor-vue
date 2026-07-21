@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue';
 import { MENU_DEFINITIONS } from '../config/menuConfig';
 import type {
     DateTimeFormatOption,
@@ -97,9 +97,10 @@ function isOpen(name: EditorMenuName): boolean {
     if (name === 'templates') return props.templateDialogOpen;
     return open.value === name;
 }
-function select(item: MenuItemDefinition): void {
-    emit('select', item);
+async function select(item: MenuItemDefinition): Promise<void> {
     open.value = null;
+    await nextTick();
+    emit('select', item);
 }
 function outside(event: PointerEvent): void {
     if (!root.value?.contains(event.target as Node)) open.value = null;

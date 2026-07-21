@@ -7,7 +7,7 @@ defineProps<{
     available: boolean;
     disabled: boolean;
 }>();
-defineEmits<{ activate: [item: ToolbarItemDefinition] }>();
+defineEmits<{ activate: [item: ToolbarItemDefinition, event: MouseEvent] }>();
 </script>
 <template>
     <button
@@ -23,7 +23,7 @@ defineEmits<{ activate: [item: ToolbarItemDefinition] }>();
         :title="item.label"
         :aria-pressed="active"
         @mousedown.prevent
-        @click="$emit('activate', item)"
+        @click="$emit('activate', item, $event)"
     >
         <EditorIcon :name="item.icon ?? 'more'" />
     </button>

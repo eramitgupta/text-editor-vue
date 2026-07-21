@@ -1,6 +1,7 @@
 .erag-editor {
     --erag-image-resize-color: #2563eb;
     --erag-image-resize-handle-size: 12px;
+    --erag-image-delete-background: #dc2626;
 }
 
 .erag-editor .erag-image-resize {
@@ -44,4 +45,80 @@
     right: calc(var(--erag-image-resize-handle-size) / -2);
     bottom: calc(var(--erag-image-resize-handle-size) / -2);
     cursor: nwse-resize;
+}
+
+.erag-editor .erag-image-resize__delete {
+    position: absolute;
+    z-index: 2;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    place-items: center;
+    color: #ffffff;
+    cursor: pointer;
+    pointer-events: auto;
+    background: var(--erag-image-delete-background);
+    border: 0;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgb(15 23 42 / 24%);
+}
+
+.erag-editor .erag-image-resize__delete:hover,
+.erag-editor .erag-image-resize__delete:focus-visible {
+    background: #b91c1c;
+    outline: 2px solid #ffffff;
+    outline-offset: 1px;
+}
+
+.erag-editor .erag-image-resize__delete::after {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 7px);
+    width: max-content;
+    max-width: 190px;
+    padding: 6px 8px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.2;
+    pointer-events: none;
+    visibility: hidden;
+    background: #111827;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgb(15 23 42 / 18%);
+    content: attr(data-erag-tooltip);
+    opacity: 0;
+    transform: translateY(2px);
+    transition:
+        opacity 120ms ease,
+        transform 120ms ease;
+}
+
+.erag-editor .erag-image-resize__delete:hover::after,
+.erag-editor .erag-image-resize__delete:focus-visible::after {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.erag-editor .erag-image-resize__delete.erag-is-loading {
+    cursor: wait;
+    opacity: 0.72;
+}
+
+.erag-editor .erag-image-resize__delete.erag-is-loading .erag-icon {
+    animation: erag-image-delete-pulse 800ms ease-in-out infinite alternate;
+}
+
+.erag-editor .erag-image-resize__delete.erag-has-error {
+    background: #991b1b;
+}
+
+@keyframes erag-image-delete-pulse {
+    to {
+        opacity: 0.35;
+    }
 }

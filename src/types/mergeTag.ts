@@ -1,7 +1,6 @@
 import type { ComputedRef, Ref } from 'vue';
 
 export interface MergeTagItem {
-    label: string;
     value: string;
     group?: string;
 }
