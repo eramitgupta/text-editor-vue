@@ -1,8 +1,8 @@
 .erag-template-dialog {
     display: grid;
     width: 100%;
-    height: min(540px, calc(100dvh - 210px));
-    min-height: min(420px, calc(100dvh - 210px));
+    height: min(420px, calc(100dvh - 210px));
+    min-height: min(320px, calc(100dvh - 210px));
     max-height: 100%;
     grid-template-columns: minmax(190px, 34%) minmax(0, 1fr);
     gap: 12px;
@@ -128,9 +128,9 @@
 
 @media (max-width: 640px) {
     .erag-template-dialog {
-        height: min(560px, calc(100dvh - 190px));
-        min-height: min(360px, calc(100dvh - 190px));
-        grid-template-rows: minmax(190px, 42%) minmax(0, 1fr);
+        height: min(480px, calc(100dvh - 190px));
+        min-height: min(320px, calc(100dvh - 190px));
+        grid-template-rows: minmax(160px, 42%) minmax(0, 1fr);
         grid-template-columns: 1fr;
     }
 }
