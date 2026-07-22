@@ -627,14 +627,16 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
             >
                 <slot name="empty" />
             </div>
-            <MergeTagSidebar
-                v-if="mergeTagSidebar.isOpen.value"
-                :id="mergeTagSidebar.id"
-                :items="config.mergeTags.items"
-                :disabled="locked"
-                @close="mergeTagSidebar.close"
-                @select="mergeTagSidebar.select"
-            />
+            <Transition name="erag-merge-tag-sidebar">
+                <MergeTagSidebar
+                    v-if="mergeTagSidebar.isOpen.value"
+                    :id="mergeTagSidebar.id"
+                    :items="config.mergeTags.items"
+                    :disabled="locked"
+                    @close="mergeTagSidebar.close"
+                    @select="mergeTagSidebar.select"
+                />
+            </Transition>
         </div>
         <TableContextMenu
             v-if="tableInteractions.contextMenu.value"

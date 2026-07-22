@@ -18,6 +18,7 @@ export function normalizeMergeTagConfig(
                 ?.filter((item) => normalizeMergeTagValue(item.value).length > 0)
                 ?.map((item) => ({
                     value: formatMergeTagValue(item.value),
+                    ...(item.name?.trim() ? { name: item.name.trim() } : {}),
                     ...(item.group?.trim() ? { group: item.group.trim() } : {}),
                 })) ?? [],
     };

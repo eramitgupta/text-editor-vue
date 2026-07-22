@@ -66,19 +66,27 @@ onBeforeUnmount(() => document.removeEventListener('keydown', keydown));
                     {{ group.label }}
                 </h3>
                 <div class="erag-merge-tag-sidebar__list">
-                    <button
+                    <div
                         v-for="item in group.items"
                         :key="item.value"
-                        type="button"
                         class="erag-merge-tag-sidebar__item"
-                        :disabled="disabled"
-                        @mousedown.prevent
-                        @click="emit('select', item)"
                     >
-                        <span class="erag-merge-tag-sidebar__item-value">
-                            {{ formatMergeTagValue(item.value) }}
+                        <span
+                            v-if="item.name"
+                            class="erag-merge-tag-sidebar__item-name"
+                        >
+                            {{ item.name }}
                         </span>
-                    </button>
+                        <button
+                            type="button"
+                            class="erag-merge-tag-sidebar__item-value"
+                            :disabled="disabled"
+                            @mousedown.prevent
+                            @click="emit('select', item)"
+                        >
+                            {{ formatMergeTagValue(item.value) }}
+                        </button>
+                    </div>
                 </div>
             </section>
             <p

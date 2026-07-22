@@ -2,6 +2,7 @@ import type { ComputedRef, Ref } from 'vue';
 
 export interface MergeTagItem {
     value: string;
+    name?: string;
     group?: string;
 }
 

@@ -82,7 +82,15 @@ onMounted(() => {
                     @pointerdown.prevent="emit('select', entry.item)"
                 >
                     <span class="erag-merge-tag-dropdown__label">
-                        {{ formatMergeTagValue(entry.item.value) }}
+                        <span
+                            v-if="entry.item.name"
+                            class="erag-merge-tag-dropdown__name"
+                        >
+                            {{ entry.item.name }}
+                        </span>
+                        <span class="erag-merge-tag-dropdown__value">
+                            {{ formatMergeTagValue(entry.item.value) }}
+                        </span>
                     </span>
                 </button>
             </div>

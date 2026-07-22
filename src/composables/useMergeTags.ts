@@ -13,7 +13,7 @@ import {
 } from '../utils/mergeTag';
 import { getCaretRect } from '../utils/selection';
 
-const DROPDOWN_WIDTH = 220;
+const DROPDOWN_WIDTH = 320;
 const DROPDOWN_HEIGHT = 260;
 const VIEWPORT_PADDING = 12;
 const CARET_GAP = 6;
@@ -245,7 +245,7 @@ export function useMergeTags(sources: MergeTagComposableSources, callbacks: Merg
 
 function matchScore(item: MergeTagItem, query: string): number {
     if (!query) return 0;
-    const values = [normalizeMergeTagValue(item.value), item.group]
+    const values = [normalizeMergeTagValue(item.value), item.name, item.group]
         .filter((value): value is string => Boolean(value))
         .map((value) => value.toLocaleLowerCase());
     if (values.some((value) => value.startsWith(query))) return 0;

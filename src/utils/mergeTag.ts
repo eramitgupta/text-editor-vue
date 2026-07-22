@@ -61,6 +61,7 @@ export function createMergeTagElement(item: MergeTagItem): HTMLSpanElement {
     element.className = 'erag-merge-tag';
     element.dataset.eragMergeTag = 'true';
     element.dataset.eragMergeTagValue = formatMergeTagValue(item.value);
+    if (item.name?.trim()) element.dataset.eragMergeTagName = item.name.trim();
     element.contentEditable = 'false';
     element.textContent = formatMergeTagValue(item.value);
     return element;
@@ -68,8 +69,10 @@ export function createMergeTagElement(item: MergeTagItem): HTMLSpanElement {
 
 export function parseMergeTagElement(element: Element): MergeTagItem | null {
     if (!isValidMergeTagElement(element)) return null;
+    const name = element.getAttribute('data-erag-merge-tag-name')?.trim();
     return {
         value: element.getAttribute('data-erag-merge-tag-value') ?? '',
+        ...(name ? { name } : {}),
     };
 }
 

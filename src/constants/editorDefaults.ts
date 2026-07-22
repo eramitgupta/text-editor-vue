@@ -125,6 +125,7 @@ export const DEFAULT_ALLOWED_ATTRIBUTES: Record<string, string[]> = {
         'data-erag-mention-value',
         'data-erag-merge-tag',
         'data-erag-merge-tag-value',
+        'data-erag-merge-tag-name',
         'contenteditable',
     ],
     a: ['href', 'target', 'rel', 'name'],
