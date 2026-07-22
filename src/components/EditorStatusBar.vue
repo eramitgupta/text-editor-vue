@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { EditorCounts } from '../types';
+import EditorIcon from './icons/EditorIcon.vue';
+
 defineProps<{
     path: string;
     counts: EditorCounts;
@@ -36,7 +38,10 @@ defineSlots<{ start(): unknown; end(): unknown }>();
             :disabled="disabled"
             @pointerdown="$emit('resizeStart', $event)"
         >
-            <span />
+            <EditorIcon
+                name="resize"
+                :size="16"
+            />
         </button>
     </div>
 </template>

@@ -157,8 +157,8 @@
     margin-block: 0.2em;
 }
 
-.erag-editor__content li>ul,
-.erag-editor__content li>ol {
+.erag-editor__content li > ul,
+.erag-editor__content li > ol {
     margin-block: 0.2em;
 }
 
@@ -260,37 +260,25 @@
 
 .erag-statusbar__resize {
     position: relative;
+    display: inline-flex;
+    flex: 0 0 24px;
+    align-items: flex-end;
+    justify-content: flex-end;
     width: 24px;
+    min-width: 24px;
     height: 27px;
-    padding: 0;
-    color: #94a3b8;
+    margin-inline-start: 2px;
+    padding: 0 2px 2px 0;
+    color: #64748b;
     cursor: nwse-resize;
     background: transparent;
     border: 0;
 }
 
-.erag-statusbar__resize::before,
-.erag-statusbar__resize::after,
-.erag-statusbar__resize span::after {
-    position: absolute;
-    right: 4px;
-    bottom: 4px;
-    width: 7px;
-    height: 1px;
-    background: currentColor;
-    content: '';
-    transform: rotate(-45deg);
-    transform-origin: right center;
-}
-
-.erag-statusbar__resize::after {
-    width: 4px;
-    bottom: 3px;
-}
-
-.erag-statusbar__resize span::after {
-    width: 10px;
-    bottom: 5px;
+.erag-statusbar__resize .erag-icon {
+    display: block;
+    flex: 0 0 auto;
+    pointer-events: none;
 }
 
 .erag-editor--fullscreen {

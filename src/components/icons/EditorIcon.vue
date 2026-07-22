@@ -282,6 +282,9 @@ defineProps<{ name: string; size?: number }>();
         <template v-else-if="name === 'close'">
             <path d="M6 6l12 12M18 6 6 18" />
         </template>
+        <template v-else-if="name === 'resize'">
+            <path d="m6 18 12-12M11 18l7-7M16 18l2-2" />
+        </template>
         <template v-else>
             <circle
                 cx="5"
