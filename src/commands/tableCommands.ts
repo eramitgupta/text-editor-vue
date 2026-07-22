@@ -1,4 +1,5 @@
 import { closestElement } from '../utils/dom';
+import type { CellPropertiesValue } from '../types';
 
 export function executeTableCommand(root: HTMLElement, id: string): boolean {
     const cell = closestElement(root, 'td') ?? closestElement(root, 'th');
@@ -72,6 +73,83 @@ export function applyTableProperties(root: HTMLElement, values: Record<string, s
     for (const cell of table.querySelectorAll<HTMLElement>('td,th'))
         cell.style.padding = values.cellPadding || '';
     return true;
+}
+
+export function getCellProperties(
+    root: HTMLElement | null,
+    range: Range | null,
+): CellPropertiesValue {
+    const cell = root ? selectedCell(root, range) : null;
+
+    return {
+        target: 'cell',
+        cellType: cell?.tagName.toLowerCase() === 'th' ? 'th' : 'td',
+        scope:
+            cell?.getAttribute('scope') === 'row'
+                ? 'row'
+                : cell?.getAttribute('scope') === 'col'
+                  ? 'col'
+                  : '',
+        horizontalAlign:
+            cell?.style.textAlign === 'left' ||
+            cell?.style.textAlign === 'center' ||
+            cell?.style.textAlign === 'right'
+                ? cell.style.textAlign
+                : '',
+        verticalAlign:
+            cell?.style.verticalAlign === 'top' ||
+            cell?.style.verticalAlign === 'middle' ||
+            cell?.style.verticalAlign === 'bottom'
+                ? cell.style.verticalAlign
+                : '',
+    };
+}
+
+export function applyCellProperties(
+    root: HTMLElement,
+    range: Range | null,
+    values: CellPropertiesValue,
+): boolean {
+    const currentCell = selectedCell(root, range);
+    const table = closestElement(root, 'table', range);
+    if (!currentCell || !table) return false;
+
+    const cells =
+        values.target === 'first-row' ? [...(table.rows.item(0)?.cells ?? [])] : [currentCell];
+    if (cells.length === 0) return false;
+
+    for (const cell of cells) {
+        const updatedCell = replaceCellType(cell, values.cellType);
+        updatedCell.style.textAlign = values.horizontalAlign;
+        updatedCell.style.verticalAlign = values.verticalAlign;
+        if (values.cellType === 'th' && values.scope) {
+            updatedCell.setAttribute('scope', values.scope);
+        } else {
+            updatedCell.removeAttribute('scope');
+        }
+    }
+
+    return true;
+}
+
+function selectedCell(root: HTMLElement, range: Range | null): HTMLTableCellElement | null {
+    return closestElement(root, 'td', range) ?? closestElement(root, 'th', range);
+}
+
+function replaceCellType(
+    cell: HTMLTableCellElement,
+    cellType: CellPropertiesValue['cellType'],
+): HTMLTableCellElement {
+    if (cell.tagName.toLowerCase() === cellType) return cell;
+
+    const replacement = document.createElement(cellType);
+    for (const attribute of [...cell.attributes]) {
+        replacement.setAttribute(attribute.name, attribute.value);
+    }
+    while (cell.firstChild) replacement.append(cell.firstChild);
+    cell.replaceWith(replacement);
+
+    return replacement;
 }
 
 export function navigateTableCell(root: HTMLElement, backwards: boolean): boolean {

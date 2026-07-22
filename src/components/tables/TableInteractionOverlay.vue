@@ -12,12 +12,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     resizeStart: [event: PointerEvent, handle: TableResizeHandle];
 }>();
-const handles: TableResizeHandle[] = [
-    'north-west',
-    'north-east',
-    'south-west',
-    'south-east',
-];
+const handles: TableResizeHandle[] = ['north-west', 'north-east', 'south-west', 'south-east'];
 const tableStyle = computed(() => boxStyle(props.tableBox));
 </script>
 

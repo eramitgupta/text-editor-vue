@@ -204,6 +204,105 @@
     outline: 2px solid var(--erag-editor-active-color);
 }
 
+.erag-table-selection,
+.erag-table-cell-selection {
+    position: absolute;
+    z-index: 12;
+    pointer-events: none;
+}
+
+.erag-table-selection {
+    border: 2px solid #60a5fa;
+}
+
+.erag-table-cell-selection {
+    background: rgb(59 130 246 / 22%);
+    border: 1px solid rgb(37 99 235 / 45%);
+}
+
+.erag-table-selection__handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    pointer-events: auto;
+    cursor: nwse-resize;
+    background: #3b82f6;
+    border: 1px solid #fff;
+    border-radius: 1px;
+    box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.erag-table-selection__handle--north-west {
+    top: -6px;
+    left: -6px;
+}
+
+.erag-table-selection__handle--north-east {
+    top: -6px;
+    right: -6px;
+    cursor: nesw-resize;
+}
+
+.erag-table-selection__handle--south-west {
+    bottom: -6px;
+    left: -6px;
+    cursor: nesw-resize;
+}
+
+.erag-table-selection__handle--south-east {
+    right: -6px;
+    bottom: -6px;
+}
+
+.erag-table-context-menu {
+    position: fixed;
+    z-index: 2147483010;
+    display: grid;
+    width: 210px;
+    max-height: calc(100vh - 16px);
+    padding: 6px;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid #dbe2ea;
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgb(15 23 42 / 20%);
+    outline: none;
+}
+
+.erag-table-context-menu button {
+    min-height: 32px;
+    padding: 6px 9px;
+    color: #273142;
+    font:
+        13px/1.35 -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        sans-serif;
+    text-align: left;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+}
+
+.erag-table-context-menu button:hover,
+.erag-table-context-menu button:focus-visible {
+    color: var(--erag-editor-active-color, #2563eb);
+    background: var(--erag-editor-active-bg, #eaf2ff);
+    outline: none;
+}
+
+.erag-table-context-menu__separator {
+    height: 1px;
+    margin: 5px 7px;
+    background: #edf0f4;
+}
+
+.erag-table-context-menu .erag-table-context-menu__danger {
+    color: #dc2626;
+}
+
 .erag-editor__content blockquote {
     margin-inline: 0;
     padding-inline-start: 16px;

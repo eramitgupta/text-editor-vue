@@ -11,6 +11,7 @@ export type EditorDialogName =
     | 'about'
     | 'word-count'
     | 'table-properties'
+    | 'cell-properties'
     | 'templates';
 export interface LinkValue {
     url: string;
@@ -26,6 +27,14 @@ export interface MediaValue {
     poster: string;
 }
 
+export interface CellPropertiesValue {
+    target: 'cell' | 'first-row';
+    cellType: 'td' | 'th';
+    scope: '' | 'row' | 'col';
+    horizontalAlign: '' | 'left' | 'center' | 'right';
+    verticalAlign: '' | 'top' | 'middle' | 'bottom';
+}
+
 export interface EditorDialogsProps {
     dialog: EditorDialogName | null;
     dialogMode: 'forecolor' | 'backcolor' | null;
@@ -35,6 +44,7 @@ export interface EditorDialogsProps {
     previewHtml: string;
     root: HTMLElement | null;
     wordCountData: WordCountData;
+    cellPropertiesInitial: CellPropertiesValue;
 }
 
 export interface EditorDialogsEmits {
@@ -47,6 +57,7 @@ export interface EditorDialogsEmits {
     saveSource: [value: string];
     changed: [];
     saveTableProperties: [values: Record<string, string>];
+    saveCellProperties: [values: CellPropertiesValue];
     selectColor: [color: string];
     insertTemplate: [item: EditorTemplateItem];
 }

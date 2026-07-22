@@ -122,6 +122,49 @@
     border-color: #6d9df4;
     box-shadow: 0 0 0 2px rgb(37 99 235 / 10%);
 }
+.erag-color-input {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    min-height: 38px;
+    padding: 4px 9px 4px 5px;
+    background: #fff;
+    border: 1px solid #cfd6df;
+    border-radius: 6px;
+}
+.erag-color-input:focus-within {
+    border-color: #6d9df4;
+    box-shadow: 0 0 0 2px rgb(37 99 235 / 10%);
+}
+.erag-color-input__swatch {
+    width: 42px;
+    height: 28px;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+}
+.erag-color-input__swatch::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+.erag-color-input__swatch::-webkit-color-swatch {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+.erag-color-input__swatch::-moz-color-swatch {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+.erag-color-input__value {
+    overflow: hidden;
+    color: #64748b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
 .erag-field__file {
     position: absolute;
     inset: 0;

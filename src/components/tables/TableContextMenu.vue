@@ -24,8 +24,8 @@ const emit = defineEmits<{
 }>();
 const menu = useTemplateRef<HTMLElement>('menu');
 const menuStyle = computed(() => ({
-    top: `${Math.min(props.position.y, window.innerHeight - 360)}px`,
-    left: `${Math.min(props.position.x, window.innerWidth - 220)}px`,
+    top: `${Math.max(8, Math.min(props.position.y, window.innerHeight - 360))}px`,
+    left: `${Math.max(8, Math.min(props.position.x, window.innerWidth - 220))}px`,
 }));
 
 onMounted(() => nextTick(() => menu.value?.focus()));

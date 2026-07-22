@@ -176,7 +176,7 @@ export const MENU_DEFINITIONS: MenuDefinition[] = [
                     {
                         id: 'cell-properties',
                         label: 'Cell properties',
-                        command: 'cellProperties',
+                        dialog: 'cell-properties',
                         tableOnly: true,
                     },
                     {

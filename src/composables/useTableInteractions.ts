@@ -60,7 +60,8 @@ export function useTableInteractions(
         const move = (moveEvent: PointerEvent): void => {
             if (!dragAnchor || moveEvent.buttons === 0) return;
             const hoveredCell = cellFromPoint(moveEvent.clientX, moveEvent.clientY);
-            if (!hoveredCell || hoveredCell.closest('table') !== dragAnchor.closest('table')) return;
+            if (!hoveredCell || hoveredCell.closest('table') !== dragAnchor.closest('table'))
+                return;
             if (hoveredCell !== selectedCell.value) {
                 moveEvent.preventDefault();
                 dragged = true;
@@ -210,6 +211,51 @@ export function useTableInteractions(
         window.addEventListener('pointercancel', end, { once: true });
     }
 
+    function mergeSelectedCells(): boolean {
+        const table = selectedTable.value;
+        const cells = selectedCells.value.filter((cell) => cell.isConnected);
+        if (!table || cells.length < 2) return false;
+        const orderedCells = [...table.querySelectorAll<HTMLTableCellElement>('td,th')].filter(
+            (cell) => cells.includes(cell),
+        );
+        const firstCell = orderedCells[0];
+        if (!firstCell) return false;
+        const rows = cells
+            .map((cell) => (cell.parentElement as HTMLTableRowElement | null)?.rowIndex)
+            .filter((index): index is number => index !== undefined);
+        const columns = cells.map((cell) => cell.cellIndex);
+        const rowSpan = Math.max(...rows) - Math.min(...rows) + 1;
+        const columnSpan = Math.max(...columns) - Math.min(...columns) + 1;
+
+        for (const cell of orderedCells.slice(1)) {
+            if (cell.textContent?.trim()) {
+                if (firstCell.textContent?.trim()) firstCell.append(document.createElement('br'));
+                while (cell.firstChild) firstCell.append(cell.firstChild);
+            }
+            cell.remove();
+        }
+        firstCell.rowSpan = rowSpan;
+        firstCell.colSpan = columnSpan;
+        selectedCell.value = firstCell;
+        selectedCells.value = [firstCell];
+        saveCellRange(firstCell);
+        changed();
+        refresh();
+        return true;
+    }
+
+    function applyCellBackground(color: string, notifyChange = true): boolean {
+        const cells = selectedCells.value.filter((cell) => cell.isConnected);
+        if (cells.length === 0) return false;
+        const backgroundColor = color === 'transparent' ? '' : color;
+        const table = selectedTable.value;
+        if (table) clearMatchingContainerBackground(table, backgroundColor);
+        for (const cell of cells) cell.style.backgroundColor = backgroundColor;
+        if (notifyChange) changed();
+        refresh();
+        return true;
+    }
+
     function closeContextMenu(): void {
         contextMenu.value = null;
     }
@@ -265,6 +311,8 @@ export function useTableInteractions(
         contextMenu,
         hasMultipleCells,
         resizeStart,
+        mergeSelectedCells,
+        applyCellBackground,
         restoreSelection,
         closeContextMenu,
         refresh,
@@ -289,4 +337,22 @@ function relativeBox(rect: DOMRect, hostRect: DOMRect): TableInteractionBox {
         width: rect.width,
         height: rect.height,
     };
+}
+
+function clearMatchingContainerBackground(table: HTMLTableElement, color: string): void {
+    const normalizedColor = normalizeColor(table.ownerDocument, color);
+    const containers = [table, ...table.querySelectorAll<HTMLElement>('thead,tbody,tfoot')];
+    for (const container of containers) {
+        if (
+            normalizeColor(table.ownerDocument, container.style.backgroundColor) === normalizedColor
+        )
+            container.style.backgroundColor = '';
+    }
+}
+
+function normalizeColor(document: Document, color: string): string {
+    if (!color) return '';
+    const probe = document.createElement('span');
+    probe.style.backgroundColor = color;
+    return probe.style.backgroundColor;
 }

@@ -9,7 +9,12 @@ import {
     watch,
 } from 'vue';
 import { executeAsyncEditorCommand, executeEditorCommand } from '../commands/commandRegistry';
-import { applyTableProperties, navigateTableCell } from '../commands/tableCommands';
+import {
+    applyCellProperties,
+    applyTableProperties,
+    getCellProperties,
+    navigateTableCell,
+} from '../commands/tableCommands';
 import { insertImage, insertLink, insertMedia, insertTable } from '../commands/insertCommands';
 import { KEYBOARD_SHORTCUTS } from '../constants/keyboardShortcuts';
 import { useEditor } from '../composables/useEditor';
@@ -20,6 +25,7 @@ import { useEditorSelection } from '../composables/useEditorSelection';
 import { useEditorUpload } from '../composables/useEditorUpload';
 import { useFullscreen } from '../composables/useFullscreen';
 import { useImageResize } from '../composables/useImageResize';
+import { useTableInteractions } from '../composables/useTableInteractions';
 import { useInlineImageUpload } from '../composables/useInlineImageUpload';
 import { useLinkInitial } from '../composables/useLinkInitial';
 import { useMentions } from '../composables/useMentions';
@@ -35,6 +41,7 @@ import type {
     EditorProps,
     LinkValue,
     MediaValue,
+    CellPropertiesValue,
     MenuItemDefinition,
 } from '../types';
 import { formatDateTime, mergeDateTimeFormats } from '../utils/dateTime';
@@ -51,6 +58,8 @@ import MergeTagDropdown from './merge-tags/MergeTagDropdown.vue';
 import MergeTagSidebar from './merge-tags/MergeTagSidebar.vue';
 import ImageResizeOverlay from './images/ImageResizeOverlay.vue';
 import InlineImageUploadPortal from './images/InlineImageUploadPortal.vue';
+import TableContextMenu, { type TableContextAction } from './tables/TableContextMenu.vue';
+import TableInteractionOverlay from './tables/TableInteractionOverlay.vue';
 
 defineOptions({ inheritAttrs: false });
 const props = withDefaults(defineProps<EditorProps>(), {
@@ -84,6 +93,7 @@ const imageResize = useImageResize(
     syncInput,
     (image) => emit('image-remove', image),
 );
+const tableInteractions = useTableInteractions(editor.root, contentWrap, locked, syncInput);
 const menubar = computed(() => config.value.menubar);
 const toolbar = computed(() => config.value.toolbar);
 const statusbar = computed(() => config.value.statusbar);
@@ -123,6 +133,9 @@ const activeCommands = computed<Record<string, boolean>>(() => ({
     ...(imageResize.box.value ? imageResize.activeCommands.value : {}),
 }));
 const wordCountData = useWordCount(editor.root, selection.savedRange);
+const cellPropertiesInitial = computed(() =>
+    getCellProperties(editor.root.value, selection.savedRange.value),
+);
 const shellStyle = computed(() => ({
     width: cssUnit(config.value.width),
     minHeight: cssUnit(config.value.minHeight),
@@ -186,6 +199,7 @@ function restoreAndRun(id: string, value?: string): void {
         selection.save();
         return;
     }
+    if (id === 'backcolor' && tableInteractions.applyCellBackground(value ?? 'transparent')) return;
     if (imageResize.executeCommand(id)) return;
     selection.restore();
     if (id === 'imageUpload') {
@@ -297,7 +311,21 @@ function saveSource(value: string): void {
 function saveTableProperties(values: Record<string, string>): void {
     if (editor.root.value) {
         selection.restore();
-        applyTableProperties(editor.root.value, values);
+        const appliedBackgroundToCells = tableInteractions.applyCellBackground(
+            values.backgroundColor ?? '',
+            false,
+        );
+        applyTableProperties(editor.root.value, {
+            ...values,
+            backgroundColor: appliedBackgroundToCells ? '' : (values.backgroundColor ?? ''),
+        });
+        syncInput();
+    }
+    closeDialog();
+}
+function saveCellProperties(values: CellPropertiesValue): void {
+    if (editor.root.value) {
+        applyCellProperties(editor.root.value, selection.savedRange.value, values);
         syncInput();
     }
     closeDialog();
@@ -414,6 +442,18 @@ function handleBlur(event: FocusEvent): void {
 function handleEditorClick(event: MouseEvent): void {
     imageResize.selectFromEvent(event);
     emit('click', event);
+}
+function handleTableContextAction(action: TableContextAction): void {
+    tableInteractions.restoreSelection();
+    selection.save();
+    tableInteractions.closeContextMenu();
+    if (action === 'cell-properties' || action === 'table-properties') {
+        openDialog(action);
+        return;
+    }
+    if (action === 'mergeCells' && tableInteractions.mergeSelectedCells()) return;
+    restoreAndRun(action);
+    nextTick(() => tableInteractions.refresh());
 }
 function focus(): void {
     editor.root.value?.focus();
@@ -574,6 +614,12 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
                 @resize-start="imageResize.resizeStart"
                 @delete="imageResize.deleteSelected(config.imagesDeleteHandler)"
             />
+            <TableInteractionOverlay
+                v-if="tableInteractions.tableBox.value"
+                :table-box="tableInteractions.tableBox.value"
+                :cell-boxes="tableInteractions.cellBoxes.value"
+                @resize-start="tableInteractions.resizeStart"
+            />
             <div
                 v-if="editor.empty.value && !inlineImageUpload.isOpen.value && $slots.empty"
                 class="erag-editor__empty"
@@ -589,6 +635,12 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
                 @select="mergeTagSidebar.select"
             />
         </div>
+        <TableContextMenu
+            v-if="tableInteractions.contextMenu.value"
+            :position="tableInteractions.contextMenu.value"
+            :multiple-cells="tableInteractions.hasMultipleCells.value"
+            @select="handleTableContextAction"
+        />
         <InlineImageUploadPortal
             :target="inlineImageUpload.target.value"
             :config="config"
@@ -690,6 +742,7 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
         :preview-html="editor.clean(editor.html.value)"
         :root="editor.root.value"
         :word-count-data="wordCountData"
+        :cell-properties-initial="cellPropertiesInitial"
         @close="closeDialog"
         @save-link="saveLink"
         @unlink="unlink"
@@ -699,6 +752,7 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
         @save-source="saveSource"
         @changed="syncInput"
         @save-table-properties="saveTableProperties"
+        @save-cell-properties="saveCellProperties"
         @select-color="applyDialogColor"
         @insert-template="insertTemplate"
     />

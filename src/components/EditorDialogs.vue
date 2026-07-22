@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { EditorDialogsEmits, EditorDialogsProps } from '../types';
 import ColorDialog from './dialogs/ColorDialog.vue';
+import CellPropertiesDialog from './dialogs/CellPropertiesDialog.vue';
 import EmojiDialog from './dialogs/EmojiDialog.vue';
 import FindReplaceDialog from './dialogs/FindReplaceDialog.vue';
 import InfoDialog from './dialogs/InfoDialog.vue';
@@ -82,6 +83,12 @@ defineEmits<EditorDialogsEmits>();
         v-if="dialog === 'table-properties'"
         @close="$emit('close')"
         @save="$emit('saveTableProperties', $event)"
+    />
+    <CellPropertiesDialog
+        v-if="dialog === 'cell-properties'"
+        :initial="cellPropertiesInitial"
+        @close="$emit('close')"
+        @save="$emit('saveCellProperties', $event)"
     />
     <TemplateDialog
         v-if="dialog === 'templates'"
