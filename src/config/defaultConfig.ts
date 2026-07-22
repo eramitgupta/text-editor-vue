@@ -64,7 +64,7 @@ export const defaultEditorConfig: ResolvedEditorInit = {
     imageFilePicker: true,
     imageUrlInput: true,
     imageResize: true,
-    imageDefaultWidth: 640,
+    imageDefaultWidth: 320,
     sanitize: true,
     allowedTags: DEFAULT_ALLOWED_TAGS,
     allowedAttributes: DEFAULT_ALLOWED_ATTRIBUTES,

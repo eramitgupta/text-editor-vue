@@ -15,7 +15,8 @@ import type {
     ImagesDeleteHandler,
 } from '../types';
 
-const MINIMUM_IMAGE_SIZE = 40;
+const MINIMUM_IMAGE_WIDTH = 120;
+const MINIMUM_IMAGE_HEIGHT = 80;
 
 export function useImageResize(
     root: Ref<HTMLElement | null>,
@@ -85,33 +86,37 @@ export function useImageResize(
         const startX = event.clientX;
         const startY = event.clientY;
         const startWidth = rect.width;
-        const startHeight = rect.height;
         const aspectRatio = rect.width / rect.height || 1;
-        const maximumWidth = Math.max(MINIMUM_IMAGE_SIZE, rootRect.width - 1);
+        const minimumWidth = Math.max(MINIMUM_IMAGE_WIDTH, MINIMUM_IMAGE_HEIGHT * aspectRatio);
+        const maximumWidth = Math.max(minimumWidth, rootRect.right - rect.left);
+        const horizontalDirection = handle.endsWith('east') ? 1 : -1;
+        const verticalDirection = handle.startsWith('south') ? 1 : -1;
+        const diagonalHeight = 1 / aspectRatio;
+        const diagonalLengthSquared = 1 + diagonalHeight * diagonalHeight;
 
         const move = (moveEvent: PointerEvent): void => {
             moveEvent.preventDefault();
-            const horizontalDelta =
-                (moveEvent.clientX - startX) * (handle.endsWith('east') ? 1 : -1);
-            const verticalDelta =
-                (moveEvent.clientY - startY) * (handle.startsWith('south') ? 1 : -1);
-            const horizontalWidth = startWidth + horizontalDelta;
-            const verticalWidth = (startHeight + verticalDelta) * aspectRatio;
-            const requestedWidth =
-                Math.abs(horizontalWidth - startWidth) >= Math.abs(verticalWidth - startWidth)
-                    ? horizontalWidth
-                    : verticalWidth;
-            const width = Math.round(
-                Math.min(maximumWidth, Math.max(MINIMUM_IMAGE_SIZE, requestedWidth)),
+            const horizontalDelta = (moveEvent.clientX - startX) * horizontalDirection;
+            const verticalDelta = (moveEvent.clientY - startY) * verticalDirection;
+            const projectedWidthDelta =
+                (horizontalDelta + verticalDelta * diagonalHeight) / diagonalLengthSquared;
+            const width = Math.min(
+                maximumWidth,
+                Math.max(minimumWidth, startWidth + projectedWidthDelta),
             );
-            image.setAttribute('width', String(width));
-            image.setAttribute('height', String(Math.round(width / aspectRatio)));
+            image.style.width = `${width}px`;
+            image.style.height = `${width / aspectRatio}px`;
             refresh();
         };
         const end = (): void => {
             window.removeEventListener('pointermove', move);
             window.removeEventListener('pointerup', end);
             window.removeEventListener('pointercancel', end);
+            const finalRect = image.getBoundingClientRect();
+            image.setAttribute('width', String(Math.round(finalRect.width)));
+            image.setAttribute('height', String(Math.round(finalRect.height)));
+            image.style.removeProperty('width');
+            image.style.removeProperty('height');
             changed();
             refresh();
         };

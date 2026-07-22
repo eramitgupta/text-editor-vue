@@ -55,7 +55,7 @@ const deleteLabel = computed(
         >
             <EditorIcon
                 name="trash"
-                :size="17"
+                :size="13"
             />
         </button>
     </div>

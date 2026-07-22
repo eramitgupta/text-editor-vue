@@ -401,6 +401,7 @@ async function handlePaste(event: ClipboardEvent): Promise<void> {
                 editor.root.value,
                 { src: url, alt: image.name, width: '', height: '' },
                 config.value.relativeUrls,
+                config.value.imageDefaultWidth,
             );
             syncInput();
             mentions.handleInput();
