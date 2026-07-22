@@ -175,6 +175,7 @@
     overflow: visible;
     border-spacing: 0;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .erag-editor .erag-editor__content tr,
@@ -188,8 +189,12 @@
 .erag-editor .erag-editor__content th {
     min-width: 36px;
     height: 34px;
-    padding: 8px;
+    padding-block: 8px;
+    padding-inline: 8px;
+    overflow-wrap: anywhere;
     font-size: inherit;
+    white-space: normal;
+    word-break: break-word;
     vertical-align: top;
     background: transparent;
     border: 1px solid #cbd5e1;
