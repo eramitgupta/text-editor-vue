@@ -13,6 +13,10 @@
     border-bottom: 1px solid #e7eaf0;
 }
 
+.erag-editor--toolbar-first > .erag-toolbar {
+    border-radius: var(--erag-editor-radius) var(--erag-editor-radius) 0 0;
+}
+
 .erag-toolbar__group {
     display: inline-flex;
     flex: 0 0 auto;

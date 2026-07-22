@@ -488,6 +488,7 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
         :class="{
             'erag-is-disabled': props.disabled,
             'erag-is-readonly': locked && !props.disabled,
+            'erag-editor--toolbar-first': !menubar && Boolean(toolbar),
         }"
         :style="shellStyle"
     >
