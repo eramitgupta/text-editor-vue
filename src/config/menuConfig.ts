@@ -250,7 +250,7 @@ export const MENU_DEFINITIONS: MenuDefinition[] = [
         items: [
             {
                 id: 'shortcuts',
-                label: 'Keyboard shortcuts',
+                label: 'Shortcuts',
                 dialog: 'shortcuts',
                 shortcut: 'Alt+0',
             },

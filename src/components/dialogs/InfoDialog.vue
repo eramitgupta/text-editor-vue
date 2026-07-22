@@ -7,7 +7,7 @@ defineEmits<{ close: [] }>();
 </script>
 <template>
     <BaseDialog
-        :title="kind === 'about' ? 'About' : 'Keyboard shortcuts'"
+        :title="kind === 'about' ? 'About' : 'Shortcuts'"
         :footer-divider="false"
         @close="$emit('close')"
         ><div
