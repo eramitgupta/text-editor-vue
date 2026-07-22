@@ -27,6 +27,19 @@
 .erag-dialog--wide {
     width: min(800px, 100%);
 }
+.erag-dialog--compact {
+    width: min(300px, 100%);
+}
+.erag-dialog--compact .erag-dialog__header {
+    padding: 10px 12px;
+}
+.erag-dialog--compact .erag-dialog__body {
+    padding: 12px;
+}
+.erag-dialog--compact .erag-dialog__close {
+    width: 28px;
+    height: 28px;
+}
 .erag-dialog__header {
     display: flex;
     align-items: center;
@@ -269,13 +282,13 @@
 }
 .erag-table-grid {
     display: grid;
-    grid-template-columns: repeat(10, 24px);
-    gap: 3px;
+    grid-template-columns: repeat(10, 20px);
+    gap: 2px;
     justify-content: center;
 }
 .erag-table-grid__cell {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     padding: 0;
     cursor: pointer;
     background: #fff;
@@ -287,7 +300,7 @@
     border-color: #3b82f6;
 }
 .erag-table-grid__label {
-    margin: 12px 0 0;
+    margin: 8px 0 0;
     text-align: center;
 }
 .erag-character-dialog {

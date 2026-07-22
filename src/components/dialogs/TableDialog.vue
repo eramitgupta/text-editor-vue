@@ -9,6 +9,7 @@ const columns = shallowRef(2);
 <template>
     <BaseDialog
         title="Insert table"
+        compact
         @close="emit('close')"
         ><div
             class="erag-table-grid"
@@ -34,20 +35,5 @@ const columns = shallowRef(2);
             />
         </div>
         <p class="erag-table-grid__label">{{ rows }} × {{ columns }}</p>
-        <template #footer
-            ><button
-                type="button"
-                class="erag-button"
-                @click="emit('close')"
-            >
-                Cancel</button
-            ><button
-                type="button"
-                class="erag-button erag-button--primary"
-                @click="emit('save', rows, columns)"
-            >
-                Insert
-            </button></template
-        ></BaseDialog
-    >
+    </BaseDialog>
 </template>

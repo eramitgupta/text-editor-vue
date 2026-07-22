@@ -5,10 +5,11 @@ const props = withDefaults(
     defineProps<{
         title: string;
         wide?: boolean;
+        compact?: boolean;
         closeLabel?: string;
         footerDivider?: boolean;
     }>(),
-    { closeLabel: 'Close', footerDivider: true, wide: false },
+    { closeLabel: 'Close', compact: false, footerDivider: true, wide: false },
 );
 const emit = defineEmits<{ close: [] }>();
 defineSlots<{ default(): unknown; footer(): unknown }>();
@@ -44,7 +45,10 @@ function keydown(event: KeyboardEvent): void {
             <section
                 ref="panel"
                 class="erag-dialog"
-                :class="{ 'erag-dialog--wide': wide }"
+                :class="{
+                    'erag-dialog--wide': wide,
+                    'erag-dialog--compact': compact,
+                }"
                 role="dialog"
                 aria-modal="true"
                 :aria-label="title"
