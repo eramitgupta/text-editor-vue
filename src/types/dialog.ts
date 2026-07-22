@@ -42,6 +42,7 @@ export interface EditorDialogsProps {
     linkInitial: LinkValue;
     html: string;
     previewHtml: string;
+    sourceCodeEditable: boolean;
     root: HTMLElement | null;
     wordCountData: WordCountData;
     cellPropertiesInitial: CellPropertiesValue;

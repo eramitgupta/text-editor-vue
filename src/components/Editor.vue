@@ -83,6 +83,7 @@ const lastPublished = shallowRef(props.modelValue);
 const { toggle: toggleFullscreen } = useFullscreen(shell);
 const { upload: uploadImage, cancel: cancelImageUpload } = useEditorUpload(config);
 const locked = computed(() => props.disabled || props.readonly || config.value.readonly);
+const sourceCodeEditable = computed(() => config.value.sourceCodeEditable && !locked.value);
 const inlineImageUpload = useInlineImageUpload(editor.root, config, locked, syncInput);
 const editorResize = useEditorResize(shell, config, locked, (height) => emit('resize', { height }));
 const imageResizeLocked = computed(() => locked.value || !config.value.imageResize);
@@ -304,6 +305,10 @@ function saveTable(rows: number, columns: number): void {
     closeDialog();
 }
 function saveSource(value: string): void {
+    if (!sourceCodeEditable.value) {
+        closeDialog();
+        return;
+    }
     editor.setHtml(editor.clean(value), false);
     syncInput();
     closeDialog();
@@ -743,6 +748,7 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
         :link-initial="linkInitial"
         :html="editor.html.value"
         :preview-html="editor.clean(editor.html.value)"
+        :source-code-editable="sourceCodeEditable"
         :root="editor.root.value"
         :word-count-data="wordCountData"
         :cell-properties-initial="cellPropertiesInitial"

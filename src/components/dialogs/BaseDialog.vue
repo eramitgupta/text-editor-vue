@@ -8,8 +8,9 @@ const props = withDefaults(
         compact?: boolean;
         closeLabel?: string;
         footerDivider?: boolean;
+        bodyClass?: string;
     }>(),
-    { closeLabel: 'Close', compact: false, footerDivider: true, wide: false },
+    { bodyClass: '', closeLabel: 'Close', compact: false, footerDivider: true, wide: false },
 );
 const emit = defineEmits<{ close: [] }>();
 defineSlots<{ default(): unknown; footer(): unknown }>();
@@ -65,7 +66,12 @@ function keydown(event: KeyboardEvent): void {
                         ×
                     </button>
                 </header>
-                <div class="erag-dialog__body"><slot /></div>
+                <div
+                    class="erag-dialog__body"
+                    :class="props.bodyClass"
+                >
+                    <slot />
+                </div>
                 <footer
                     v-if="$slots.footer"
                     class="erag-dialog__footer"

@@ -23,6 +23,7 @@ export const defaultEditorConfig: ResolvedEditorInit = {
     promotion: false,
     resize: true,
     readonly: false,
+    sourceCodeEditable: true,
     autofocus: false,
     spellcheck: true,
     direction: 'ltr',

@@ -72,6 +72,7 @@ export interface EditorInit {
     promotion?: boolean;
     resize?: boolean;
     readonly?: boolean;
+    sourceCodeEditable?: boolean;
     autofocus?: boolean;
     spellcheck?: boolean;
     direction?: 'ltr' | 'rtl';

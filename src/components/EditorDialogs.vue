@@ -54,6 +54,7 @@ defineEmits<EditorDialogsEmits>();
     <SourceDialog
         v-if="dialog === 'source'"
         :html="html"
+        :editable="sourceCodeEditable"
         @close="$emit('close')"
         @save="$emit('saveSource', $event)"
     />
