@@ -1,16 +1,22 @@
 .erag-menubar {
     display: flex;
     flex: 0 0 auto;
+    flex-wrap: wrap;
     align-items: center;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     gap: 4px;
     min-height: 30px;
     padding: 3px 7px;
+    overflow: visible;
     background: #fff;
     border-bottom: 1px solid #edf0f4;
     border-radius: var(--erag-editor-radius) var(--erag-editor-radius) 0 0;
 }
 .erag-menubar__entry {
     position: relative;
+    flex: 0 0 auto;
 }
 .erag-menubar__button {
     display: inline-flex;
@@ -40,6 +46,7 @@
 }
 .erag-menubar__end {
     display: flex;
+    min-width: 0;
     align-items: center;
     margin-inline-start: auto;
 }
@@ -126,9 +133,6 @@
 }
 
 @media (max-width: 680px) {
-    .erag-menubar {
-        overflow-x: auto;
-    }
     .erag-menu {
         position: fixed;
         top: 48px;
@@ -137,5 +141,30 @@
     .erag-menu--nested {
         top: 0;
         left: min(210px, 32vw);
+    }
+}
+
+@container erag-editor (max-width: 420px) {
+    .erag-menubar {
+        gap: 2px;
+        padding-inline: 4px;
+    }
+
+    .erag-menubar__button {
+        justify-content: center;
+        width: 32px;
+        height: 30px;
+        padding: 5px;
+    }
+
+    .erag-menubar__label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 }

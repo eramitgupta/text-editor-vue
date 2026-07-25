@@ -58,6 +58,14 @@ function sanitizeElement(element: Element, options: SanitizerOptions): void {
         element.replaceWith(...element.childNodes);
         return;
     }
+    if (
+        tag === 'input' &&
+        (element.getAttribute('type') !== 'checkbox' ||
+            element.getAttribute('data-erag-checklist-checkbox') !== 'true')
+    ) {
+        element.remove();
+        return;
+    }
     if (isMentionCandidate(element)) {
         if (!normalizeMentionElement(element)) {
             element.replaceWith(element.ownerDocument.createTextNode(element.textContent ?? ''));
@@ -71,6 +79,7 @@ function sanitizeElement(element: Element, options: SanitizerOptions): void {
         return;
     }
     if (tag === 'span') element.removeAttribute('contenteditable');
+    if (tag === 'input') element.setAttribute('contenteditable', 'false');
     const allowed = new Set([
         ...(options.allowedAttributes['*'] ?? []),
         ...(options.allowedAttributes[tag] ?? []),

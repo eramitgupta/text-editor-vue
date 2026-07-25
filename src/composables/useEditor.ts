@@ -12,7 +12,7 @@ export function useEditor(config: ComputedRef<ResolvedEditorInit>, initialHtml: 
         if (!root.value) return !html.value.trim();
         return (
             !getPersistentText(root.value).trim() &&
-            !root.value.querySelector('img,video,audio,iframe,table,hr')
+            !root.value.querySelector('img,video,audio,iframe,table,hr,[data-erag-checklist]')
         );
     });
     function clean(value: string): string {

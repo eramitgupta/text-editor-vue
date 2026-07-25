@@ -4,6 +4,7 @@ export type EditorToolbarItemName =
     | 'blocks'
     | 'fontfamily'
     | 'fontsize'
+    | 'lineheight'
     | 'bold'
     | 'italic'
     | 'underline'
@@ -13,12 +14,14 @@ export type EditorToolbarItemName =
     | 'casechange'
     | 'forecolor'
     | 'backcolor'
+    | 'alignment'
     | 'alignleft'
     | 'aligncenter'
     | 'alignright'
     | 'alignjustify'
     | 'bullist'
     | 'numlist'
+    | 'checklist'
     | 'outdent'
     | 'indent'
     | 'link'
@@ -42,5 +45,9 @@ export interface ToolbarItemDefinition {
     command?: string;
     dialog?: string;
     select?: 'blocks' | 'fontfamily' | 'fontsize';
+    dropdown?: boolean;
     plugin?: string;
 }
+
+export type TextAlignmentCommand = 'alignleft' | 'aligncenter' | 'alignright' | 'alignjustify';
+export type ListCommand = 'bullist' | 'numlist';

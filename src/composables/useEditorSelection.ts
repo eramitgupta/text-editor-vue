@@ -37,6 +37,7 @@ export function useEditorSelection(root: Ref<HTMLElement | null>) {
                         'alignjustify',
                         'bullist',
                         'numlist',
+                        'checklist',
                     ].map((id) => [id, isEditorCommandActive(id)]),
                 ),
             };

@@ -4,12 +4,17 @@ import { TOOLBAR_ITEMS, parseToolbar } from '../config/toolbarConfig';
 import { useToolbarOverflow } from '../composables/useToolbarOverflow';
 import type {
     EditorToolbarGroup,
+    ListCommand,
     ResolvedEditorInit,
     TextCaseMode,
+    TextAlignmentCommand,
     ToolbarItemDefinition,
 } from '../types';
+import AlignmentMenu from './toolbar/AlignmentMenu.vue';
 import ColorPalette from './toolbar/ColorPalette.vue';
 import CaseChangeMenu from './toolbar/CaseChangeMenu.vue';
+import LineHeightMenu from './toolbar/LineHeightMenu.vue';
+import ListMenu from './toolbar/ListMenu.vue';
 import ToolbarButton from './toolbar/ToolbarButton.vue';
 
 const props = defineProps<{
@@ -25,6 +30,30 @@ defineSlots<{ start(): unknown; end(): unknown }>();
 const container = useTemplateRef<HTMLElement>('container');
 const open = shallowRef<string | null>(null);
 const selectedCase = shallowRef<TextCaseMode | null>(null);
+const selectedLineHeight = shallowRef<string | null>(null);
+const selectedListStyles = shallowRef<Record<ListCommand, string>>({
+    bullist: '',
+    numlist: '',
+});
+const selectedAlignment = computed<TextAlignmentCommand>(() => {
+    const commands: TextAlignmentCommand[] = [
+        'alignleft',
+        'aligncenter',
+        'alignright',
+        'alignjustify',
+    ];
+
+    return commands.find((command) => props.activeCommands[command]) ?? 'alignleft';
+});
+const selectedList = computed<ListCommand | null>(() => {
+    if (props.activeCommands.numlist) return 'numlist';
+    if (props.activeCommands.bullist) return 'bullist';
+
+    return null;
+});
+const openListCommand = computed<ListCommand | null>(() =>
+    open.value === 'bullist' || open.value === 'numlist' ? open.value : null,
+);
 const popoverAnchor = shallowRef<HTMLElement | null>(null);
 const popoverLeft = shallowRef(8);
 const popoverStyle = computed(() => ({ left: `${popoverLeft.value}px` }));
@@ -69,6 +98,12 @@ function activate(item: ToolbarItemDefinition, event: MouseEvent): void {
     if (isDisabled(item)) return;
     if (item.name === 'casechange') {
         togglePopover('casechange', event);
+    } else if (item.name === 'lineheight') {
+        togglePopover('lineheight', event);
+    } else if (item.name === 'alignment') {
+        togglePopover('alignment', event);
+    } else if (item.name === 'bullist' || item.name === 'numlist') {
+        togglePopover(item.name, event);
     } else if (item.command) emit('command', item.command);
     else if (item.dialog) {
         if (item.dialog === 'forecolor' || item.dialog === 'backcolor')
@@ -81,8 +116,31 @@ function chooseCase(mode: TextCaseMode): void {
     emit('command', 'changeCase', mode);
     open.value = null;
 }
+function chooseLineHeight(value: string): void {
+    selectedLineHeight.value = value;
+    emit('command', 'lineheight', value);
+    open.value = null;
+}
+function chooseAlignment(command: TextAlignmentCommand): void {
+    emit('command', command);
+    open.value = null;
+}
+function chooseList(command: ListCommand, style: string): void {
+    selectedListStyles.value = {
+        ...selectedListStyles.value,
+        [command]: style,
+    };
+    emit('command', command, style);
+    open.value = null;
+}
 function outside(event: PointerEvent): void {
-    if (!container.value?.contains(event.target as Node)) open.value = null;
+    const target = event.target as Node | null;
+    if (target && container.value?.contains(target)) return;
+
+    const targetElement = target instanceof Element ? target : target?.parentElement;
+    if (open.value === 'more' && targetElement?.closest('.erag-editor__content-wrap')) return;
+
+    open.value = null;
 }
 function isHistoryCommand(item: ToolbarItemDefinition): boolean {
     return item.command === 'undo' || item.command === 'redo';
@@ -95,6 +153,10 @@ function isDisabled(item: ToolbarItemDefinition): boolean {
 }
 function isActive(item: ToolbarItemDefinition): boolean {
     if (item.name === 'casechange') return open.value === 'casechange';
+    if (item.name === 'lineheight') return open.value === 'lineheight';
+    if (item.name === 'alignment') return open.value === 'alignment';
+    if (item.name === 'bullist' || item.name === 'numlist')
+        return open.value === item.name || Boolean(props.activeCommands[item.name]);
     return Boolean(item.command && !isDisabled(item) && props.activeCommands[item.command]);
 }
 function selectValue(item: ToolbarItemDefinition, event: Event): void {
@@ -185,48 +247,48 @@ onBeforeUnmount(() => {
                 :disabled="disabled"
                 @activate="activate"
             />
+        </div>
+        <div
+            v-if="overflow.length && open === 'more'"
+            class="erag-toolbar__overflow-row"
+            role="toolbar"
+            aria-label="More formatting options"
+        >
             <div
-                v-if="open === 'more'"
-                class="erag-toolbar__overflow-menu"
-                role="menu"
-                aria-label="More formatting options"
+                v-for="group in overflow"
+                :key="group.name"
+                class="erag-toolbar__overflow-group"
             >
-                <div
-                    v-for="group in overflow"
-                    :key="group.name"
-                    class="erag-toolbar__overflow-group"
+                <template
+                    v-for="name in group.items"
+                    :key="name"
                 >
-                    <template
-                        v-for="name in group.items"
-                        :key="name"
+                    <select
+                        v-if="TOOLBAR_ITEMS[name].select"
+                        class="erag-toolbar__select erag-toolbar__select--overflow"
+                        :aria-label="TOOLBAR_ITEMS[name].label"
+                        :disabled="isDisabled(TOOLBAR_ITEMS[name])"
+                        @mousedown="$emit('command', 'saveSelection')"
+                        @change="selectValue(TOOLBAR_ITEMS[name], $event)"
                     >
-                        <select
-                            v-if="TOOLBAR_ITEMS[name].select"
-                            class="erag-toolbar__select erag-toolbar__select--overflow"
-                            :aria-label="TOOLBAR_ITEMS[name].label"
-                            :disabled="isDisabled(TOOLBAR_ITEMS[name])"
-                            @mousedown="$emit('command', 'saveSelection')"
-                            @change="selectValue(TOOLBAR_ITEMS[name], $event)"
+                        <option value="">{{ TOOLBAR_ITEMS[name].label }}</option>
+                        <option
+                            v-for="option in options(TOOLBAR_ITEMS[name])"
+                            :key="option.value"
+                            :value="option.value"
                         >
-                            <option value="">{{ TOOLBAR_ITEMS[name].label }}</option>
-                            <option
-                                v-for="option in options(TOOLBAR_ITEMS[name])"
-                                :key="option.value"
-                                :value="option.value"
-                            >
-                                {{ option.label }}
-                            </option>
-                        </select>
-                        <ToolbarButton
-                            v-else
-                            :item="TOOLBAR_ITEMS[name]"
-                            :active="isActive(TOOLBAR_ITEMS[name])"
-                            :available="isAvailable(TOOLBAR_ITEMS[name])"
-                            :disabled="isDisabled(TOOLBAR_ITEMS[name])"
-                            @activate="activate"
-                        />
-                    </template>
-                </div>
+                            {{ option.label }}
+                        </option>
+                    </select>
+                    <ToolbarButton
+                        v-else
+                        :item="TOOLBAR_ITEMS[name]"
+                        :active="isActive(TOOLBAR_ITEMS[name])"
+                        :available="isAvailable(TOOLBAR_ITEMS[name])"
+                        :disabled="isDisabled(TOOLBAR_ITEMS[name])"
+                        @activate="activate"
+                    />
+                </template>
             </div>
         </div>
         <ColorPalette
@@ -244,6 +306,33 @@ onBeforeUnmount(() => {
             :style="popoverStyle"
             :mode="selectedCase"
             @select="chooseCase"
+            @close="open = null"
+        />
+        <LineHeightMenu
+            v-if="open === 'lineheight'"
+            class="erag-toolbar__popover"
+            :style="popoverStyle"
+            :options="config.lineHeightFormats"
+            :selected="selectedLineHeight"
+            @select="chooseLineHeight"
+            @close="open = null"
+        />
+        <AlignmentMenu
+            v-if="open === 'alignment'"
+            class="erag-toolbar__popover"
+            :style="popoverStyle"
+            :selected="selectedAlignment"
+            @select="chooseAlignment"
+            @close="open = null"
+        />
+        <ListMenu
+            v-if="openListCommand"
+            class="erag-toolbar__popover"
+            :style="popoverStyle"
+            :command="openListCommand"
+            :active="selectedList === openListCommand"
+            :selected-style="selectedListStyles[openListCommand]"
+            @select="chooseList"
             @close="open = null"
         />
         <ColorPalette
