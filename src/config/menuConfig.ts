@@ -99,6 +99,12 @@ export const MENU_DEFINITIONS: MenuDefinition[] = [
             { id: 'media', label: 'Media', dialog: 'media', plugin: 'media' },
             { id: 'table', label: 'Table', dialog: 'table', plugin: 'table' },
             {
+                id: 'checklist',
+                label: 'Checklist',
+                command: 'checklist',
+                plugin: 'lists',
+            },
+            {
                 id: 'character',
                 label: 'Special character',
                 dialog: 'special-character',

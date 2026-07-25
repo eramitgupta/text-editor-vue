@@ -1,7 +1,7 @@
 import type { EditorToolbarGroup, EditorToolbarItemName, ToolbarItemDefinition } from '../types';
 
 export const DEFAULT_TOOLBAR =
-    'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough superscript subscript casechange | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | hr removeformat | code preview fullscreen more';
+    'undo redo | blocks fontfamily fontsize lineheight | bold italic underline strikethrough superscript subscript casechange | forecolor backcolor | alignment | bullist numlist checklist outdent indent | link image media table | hr removeformat | code preview fullscreen more';
 
 export const TOOLBAR_ITEMS: Record<EditorToolbarItemName, ToolbarItemDefinition> = {
     undo: { name: 'undo', label: 'Undo', icon: 'undo', command: 'undo' },
@@ -16,6 +16,12 @@ export const TOOLBAR_ITEMS: Record<EditorToolbarItemName, ToolbarItemDefinition>
         name: 'fontsize',
         label: 'Font size',
         select: 'fontsize',
+    },
+    lineheight: {
+        name: 'lineheight',
+        label: 'Line height',
+        icon: 'line-height',
+        dropdown: true,
     },
     bold: { name: 'bold', label: 'Bold', icon: 'bold', command: 'bold' },
     italic: {
@@ -65,6 +71,12 @@ export const TOOLBAR_ITEMS: Record<EditorToolbarItemName, ToolbarItemDefinition>
         icon: 'highlight',
         dialog: 'backcolor',
     },
+    alignment: {
+        name: 'alignment',
+        label: 'Alignment',
+        icon: 'align-left',
+        dropdown: true,
+    },
     alignleft: {
         name: 'alignleft',
         label: 'Align left',
@@ -94,12 +106,21 @@ export const TOOLBAR_ITEMS: Record<EditorToolbarItemName, ToolbarItemDefinition>
         label: 'Bulleted list',
         icon: 'list',
         command: 'bullist',
+        dropdown: true,
     },
     numlist: {
         name: 'numlist',
         label: 'Numbered list',
         icon: 'numbered-list',
         command: 'numlist',
+        dropdown: true,
+    },
+    checklist: {
+        name: 'checklist',
+        label: 'Insert checklist',
+        icon: 'checklist',
+        command: 'checklist',
+        plugin: 'lists',
     },
     outdent: {
         name: 'outdent',

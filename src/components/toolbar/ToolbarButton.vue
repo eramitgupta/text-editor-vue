@@ -14,6 +14,7 @@ defineEmits<{ activate: [item: ToolbarItemDefinition, event: MouseEvent] }>();
         type="button"
         class="erag-toolbar__button"
         :class="{
+            'erag-toolbar__button--dropdown': item.dropdown,
             'erag-is-active': active,
             'erag-is-available': available,
             'erag-is-disabled': disabled,
@@ -21,10 +22,17 @@ defineEmits<{ activate: [item: ToolbarItemDefinition, event: MouseEvent] }>();
         :disabled="disabled"
         :aria-label="item.label"
         :title="item.label"
-        :aria-pressed="active"
+        :aria-haspopup="item.dropdown ? 'menu' : undefined"
+        :aria-expanded="item.dropdown ? active : undefined"
+        :aria-pressed="item.dropdown ? undefined : active"
         @mousedown.prevent
         @click="$emit('activate', item, $event)"
     >
         <EditorIcon :name="item.icon ?? 'more'" />
+        <EditorIcon
+            v-if="item.dropdown"
+            name="chevron-down"
+            :size="12"
+        />
     </button>
 </template>

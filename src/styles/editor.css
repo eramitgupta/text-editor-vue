@@ -14,9 +14,11 @@
     flex-direction: column;
     box-sizing: border-box;
     width: 100%;
-    min-width: 260px;
+    min-width: 0;
     height: var(--erag-editor-height);
     overflow: visible;
+    container-name: erag-editor;
+    container-type: inline-size;
     color: var(--erag-editor-text-color);
     font:
         14px/1.45 -apple-system,
@@ -160,6 +162,32 @@
 .erag-editor__content li > ul,
 .erag-editor__content li > ol {
     margin-block: 0.2em;
+}
+
+.erag-editor__content ul[data-erag-checklist='true'] {
+    padding-inline-start: 0;
+    list-style: none;
+}
+
+.erag-editor__content li[data-erag-checklist-item='true'] {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    list-style: none;
+}
+
+.erag-editor__content input[data-erag-checklist-checkbox='true'] {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    margin: 0.2em 0 0;
+    accent-color: var(--erag-editor-active-color);
+    cursor: pointer;
+}
+
+.erag-editor.erag-is-disabled .erag-editor__content input[data-erag-checklist-checkbox='true'],
+.erag-editor.erag-is-readonly .erag-editor__content input[data-erag-checklist-checkbox='true'] {
+    pointer-events: none;
 }
 
 .erag-editor__content img,

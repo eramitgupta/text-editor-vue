@@ -135,7 +135,9 @@ onBeforeUnmount(() => {
                 class="erag-menubar__button"
                 :class="{ 'erag-is-active': isOpen(menu.name) }"
                 role="menuitem"
+                :aria-label="menu.label"
                 :aria-expanded="isOpen(menu.name)"
+                :title="menu.label"
                 :disabled="disabled"
                 @mousedown.prevent
                 @click="toggle(menu.name)"

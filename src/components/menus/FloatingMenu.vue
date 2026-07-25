@@ -96,6 +96,7 @@ async function onKeydown(event: KeyboardEvent): Promise<void> {
                 >
                     <span class="erag-menu__check">{{ isActive(item) ? '✓' : '' }}</span>
                     <EditorIcon
+                        v-if="(level ?? 0) === 0"
                         class="erag-menu__icon"
                         :name="resolveMenuItemIcon(item)"
                         :size="16"
