@@ -16,14 +16,15 @@ import {
     getCellProperties,
     navigateTableCell,
 } from '../commands/tableCommands';
-import { insertImage, insertLink, insertMedia, insertTable } from '../commands/insertCommands';
+import { insertLink, insertMedia, insertTable } from '../commands/insertCommands';
 import { KEYBOARD_SHORTCUTS } from '../constants/keyboardShortcuts';
 import { useEditor } from '../composables/useEditor';
 import { useEditorConfig } from '../composables/useEditorConfig';
 import { useEditorHistory } from '../composables/useEditorHistory';
+import { useEditorInstance } from '../composables/useEditorInstance';
+import { useEditorPaste } from '../composables/useEditorPaste';
 import { useEditorResize } from '../composables/useEditorResize';
 import { useEditorSelection } from '../composables/useEditorSelection';
-import { useEditorUpload } from '../composables/useEditorUpload';
 import { useFullscreen } from '../composables/useFullscreen';
 import { useImageResize } from '../composables/useImageResize';
 import { useTableInteractions } from '../composables/useTableInteractions';
@@ -36,7 +37,6 @@ import { useWordCount } from '../composables/useWordCount';
 import type {
     EditorDialogName,
     EditorEmits,
-    EditorInstance,
     EditorSlots,
     EditorTemplateItem,
     EditorProps,
@@ -46,7 +46,7 @@ import type {
     MenuItemDefinition,
 } from '../types';
 import { formatDateTime, mergeDateTimeFormats } from '../utils/dateTime';
-import { escapeHtml, insertAtSelection } from '../utils/html';
+import { insertAtSelection } from '../utils/html';
 import { cssUnit } from '../utils/units';
 import EditorContent from './EditorContent.vue';
 import EditorDialogs from './EditorDialogs.vue';
@@ -82,7 +82,6 @@ const dialogMode = shallowRef<'forecolor' | 'backcolor' | null>(null);
 const lastCommitted = shallowRef(props.modelValue);
 const lastPublished = shallowRef(props.modelValue);
 const { toggle: toggleFullscreen } = useFullscreen(shell);
-const { upload: uploadImage, cancel: cancelImageUpload } = useEditorUpload(config);
 const locked = computed(() => props.disabled || props.readonly || config.value.readonly);
 const sourceCodeEditable = computed(() => config.value.sourceCodeEditable && !locked.value);
 const inlineImageUpload = useInlineImageUpload(editor.root, config, locked, syncInput);
@@ -126,6 +125,18 @@ const mergeTagSidebar = useMergeTagSidebar(
         insert: mergeTags.insert,
     },
 );
+const { handlePaste } = useEditorPaste({
+    editor,
+    selection,
+    config,
+    locked,
+    emitPaste: (event) => emit('paste', event),
+    onChange: () => {
+        syncInput();
+        mentions.handleInput();
+        mergeTags.handleInput();
+    },
+});
 const availableCommands = computed<Record<string, boolean>>(() => ({
     undo: history.canUndo.value,
     redo: history.canRedo.value,
@@ -222,14 +233,14 @@ function restoreAndRun(id: string, value?: string): void {
         return;
     }
     if (id === 'new') {
-        setHtml('');
+        editorInstance.setHtml('');
         history.reset();
         return;
     }
     if (id === 'dateTime') {
         const formats = mergeDateTimeFormats(config.value.dateFormats, config.value.timeFormats);
         const format = formats[Number.parseInt(value ?? '0', 10)];
-        if (format) insertText(formatDateTime(format, new Date()));
+        if (format) editorInstance.insertText(formatDateTime(format, new Date()));
         return;
     }
     if (id === 'wordCount') {
@@ -337,7 +348,7 @@ function saveCellProperties(values: CellPropertiesValue): void {
     closeDialog();
 }
 function insertCharacter(value: string): void {
-    insertText(value);
+    editorInstance.insertText(value);
     closeDialog();
 }
 function insertTemplate(item: EditorTemplateItem): void {
@@ -392,49 +403,6 @@ function handleKeydown(event: KeyboardEvent): void {
     )
         event.preventDefault();
 }
-async function handlePaste(event: ClipboardEvent): Promise<void> {
-    emit('paste', event);
-    if (locked.value || !editor.root.value) {
-        event.preventDefault();
-        return;
-    }
-    const image = [...(event.clipboardData?.files ?? [])].find((file) =>
-        file.type.startsWith('image/'),
-    );
-    if (image && config.value.pasteImages && config.value.automaticUploads) {
-        event.preventDefault();
-        selection.save();
-        try {
-            const url = await uploadImage(image);
-            selection.restore();
-            insertImage(
-                editor.root.value,
-                { src: url, alt: image.name, width: '', height: '' },
-                config.value.relativeUrls,
-                config.value.imageDefaultWidth,
-            );
-            syncInput();
-            mentions.handleInput();
-            mergeTags.handleInput();
-        } catch {
-            return;
-        } finally {
-            cancelImageUpload();
-        }
-        return;
-    }
-    const html = event.clipboardData?.getData('text/html');
-    const text = event.clipboardData?.getData('text/plain') ?? '';
-    event.preventDefault();
-    selection.restore();
-    insertAtSelection(
-        editor.root.value,
-        html ? editor.clean(html) : escapeHtml(text).replaceAll('\n', '<br>'),
-    );
-    syncInput();
-    mentions.handleInput();
-    mergeTags.handleInput();
-}
 function selectionChanged(): void {
     selection.update();
     mentions.handleSelectionChange();
@@ -467,68 +435,16 @@ function handleTableContextAction(action: TableContextAction): void {
     restoreAndRun(action);
     nextTick(() => tableInteractions.refresh());
 }
-function focus(): void {
-    editor.root.value?.focus();
-}
-function blur(): void {
-    editor.root.value?.blur();
-}
-function getHtml(): string {
-    return editor.sync();
-}
-function setHtml(value: string): void {
-    inlineImageUpload.discard();
-    editor.setHtml(value, false);
-    syncInput();
-}
-function getText(): string {
-    return editor.getText();
-}
-function clear(): void {
-    setHtml('');
-}
-function insertHtml(value: string): void {
-    if (!editor.root.value || locked.value) return;
-    selection.restore();
-    insertAtSelection(editor.root.value, editor.clean(value));
-    syncInput();
-}
-function insertText(value: string): void {
-    insertHtml(escapeHtml(value));
-}
-function selectAll(): void {
-    focus();
-    document.execCommand('selectAll', false);
-    selection.update();
-}
-function undo(): void {
-    restoreAndRun('undo');
-}
-function redo(): void {
-    restoreAndRun('redo');
-}
-function openSourceCode(): void {
-    openDialog('source');
-}
-function openPreview(): void {
-    openDialog('preview');
-}
-defineExpose<EditorInstance>({
-    focus,
-    blur,
-    getHtml,
-    setHtml,
-    getText,
-    clear,
-    insertHtml,
-    insertText,
-    selectAll,
-    undo,
-    redo,
-    openSourceCode,
-    openPreview,
-    getRootElement: () => editor.root.value,
+const editorInstance = useEditorInstance({
+    editor,
+    selection,
+    inlineImageUpload,
+    locked,
+    syncInput,
+    runCommand: restoreAndRun,
+    openDialog,
 });
+defineExpose(editorInstance);
 onMounted(() => document.addEventListener('selectionchange', selectionChanged));
 onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionChanged));
 </script>
