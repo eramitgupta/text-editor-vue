@@ -41,6 +41,13 @@ defineProps<{ name: string; size?: number }>();
         <template v-else-if="name === 'case-change'">
             <path d="M4 18 9 5l5 13M6 13h6M15 10h5M17.5 7.5 20 10l-2.5 2.5" />
         </template>
+        <template v-else-if="name === 'line-height'">
+            <path d="M6 4v16M3.5 6.5 6 4l2.5 2.5M3.5 17.5 6 20l2.5-2.5" />
+            <path d="M11 7h9M11 12h9M11 17h9" />
+        </template>
+        <template v-else-if="name === 'chevron-down'">
+            <path d="m6 9 6 6 6-6" />
+        </template>
         <template v-else-if="name.includes('align')">
             <path d="M4 6h16M4 10h12M4 14h16M4 18h12" />
         </template>
@@ -186,7 +193,9 @@ defineProps<{ name: string; size?: number }>();
             />
         </template>
         <template v-else-if="name === 'link'">
-            <path d="m9 15 6-6M7 17H5a4 4 0 0 1 0-8h4M17 7h2a4 4 0 0 1 0 8h-4" />
+            <path d="m10.6 13.4 2.8-2.8" />
+            <path d="M9.2 16.4 7.8 17.8a4 4 0 0 1-5.6-5.6l3-3a4 4 0 0 1 5.6 0" />
+            <path d="m14.8 7.6 1.4-1.4a4 4 0 0 1 5.6 5.6l-3 3a4 4 0 0 1-5.6 0" />
         </template>
         <template v-else-if="name === 'image'">
             <rect
@@ -223,11 +232,63 @@ defineProps<{ name: string; size?: number }>();
             />
             <path d="M3 9h18M9 4v16M15 4v16" />
         </template>
-        <template v-else-if="name === 'list' || name === 'numbered-list'">
+        <template v-else-if="name === 'list'">
             <path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" />
         </template>
-        <template v-else-if="name === 'indent' || name === 'outdent'">
-            <path d="M10 6h10M10 12h10M10 18h10M4 8l4 4-4 4" />
+        <template v-else-if="name === 'numbered-list'">
+            <path d="M10 6h10M10 12h10M10 18h10" />
+            <text
+                x="2"
+                y="8"
+                fill="currentColor"
+                stroke="none"
+                font-family="Arial, sans-serif"
+                font-size="6"
+                font-weight="600"
+            >
+                1
+            </text>
+            <text
+                x="2"
+                y="14"
+                fill="currentColor"
+                stroke="none"
+                font-family="Arial, sans-serif"
+                font-size="6"
+                font-weight="600"
+            >
+                2
+            </text>
+            <text
+                x="2"
+                y="20"
+                fill="currentColor"
+                stroke="none"
+                font-family="Arial, sans-serif"
+                font-size="6"
+                font-weight="600"
+            >
+                3
+            </text>
+        </template>
+        <template v-else-if="name === 'checklist'">
+            <path d="m3 6 1.5 1.5L7 4.5M10 6h11" />
+            <path d="m3 12 1.5 1.5L7 10.5M10 12h11" />
+            <path d="m3 18 1.5 1.5L7 16.5M10 18h11" />
+        </template>
+        <template v-else-if="name === 'outdent'">
+            <path
+                d="M3 3h18v2H3V3Zm8 4h10v2H11V7Zm0 4h10v2H11v-2Zm0 4h10v2H11v-2Zm-8-3 4-4v3h2v2H7v3l-4-4Zm0 7h18v2H3v-2Z"
+                fill="currentColor"
+                stroke="none"
+            />
+        </template>
+        <template v-else-if="name === 'indent'">
+            <path
+                d="M3 3h18v2H3V3Zm0 4h10v2H3V7Zm0 4h10v2H3v-2Zm0 4h10v2H3v-2Zm14-7 4 4-4 4v-3h-2v-2h2V8ZM3 19h18v2H3v-2Z"
+                fill="currentColor"
+                stroke="none"
+            />
         </template>
         <template v-else-if="name === 'code'">
             <path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14" />
@@ -245,7 +306,8 @@ defineProps<{ name: string; size?: number }>();
         </template>
         <template v-else-if="name === 'horizontal-rule'"><path d="M4 12h16" /></template>
         <template v-else-if="name === 'clear-format'">
-            <path d="m4 20 6-6M7 4h10M12 4 8 15M14 15l6 6M20 15l-6 6" />
+            <path d="M6 4h11M12 4 8 16M6 16h7" />
+            <path d="m15 15 5 5M20 15l-5 5" />
         </template>
         <template v-else-if="name === 'text-color'">
             <path d="m5 19 7-15 7 15M8 14h8M5 22h14" />

@@ -1,4 +1,5 @@
 import { closestElement } from '../utils/dom';
+
 export function setListStyle(root: HTMLElement, type: 'ul' | 'ol', style: string): boolean {
     const list = closestElement(root, type);
     if (list) {

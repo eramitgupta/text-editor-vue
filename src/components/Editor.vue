@@ -9,6 +9,7 @@ import {
     watch,
 } from 'vue';
 import { executeAsyncEditorCommand, executeEditorCommand } from '../commands/commandRegistry';
+import { handleChecklistKeydown, syncChecklistCheckbox } from '../commands/checklistCommands';
 import {
     applyCellProperties,
     applyTableProperties,
@@ -375,6 +376,10 @@ function handleKeydown(event: KeyboardEvent): void {
         mergeTags.handleRemoval(event)
     )
         return;
+    if (editor.root.value && handleChecklistKeydown(editor.root.value, event)) {
+        syncInput();
+        return;
+    }
     if (commandShortcut(event)) return;
     if (event.altKey && event.key === '0') {
         event.preventDefault();
@@ -446,6 +451,7 @@ function handleBlur(event: FocusEvent): void {
     }
 }
 function handleEditorClick(event: MouseEvent): void {
+    if (editor.root.value && syncChecklistCheckbox(editor.root.value, event)) syncInput();
     imageResize.selectFromEvent(event);
     emit('click', event);
 }
