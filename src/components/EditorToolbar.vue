@@ -29,6 +29,7 @@ const emit = defineEmits<{ command: [id: string, value?: string]; dialog: [name:
 defineSlots<{ start(): unknown; end(): unknown }>();
 const container = useTemplateRef<HTMLElement>('container');
 const open = shallowRef<string | null>(null);
+const moreExpanded = shallowRef(false);
 const selectedCase = shallowRef<TextCaseMode | null>(null);
 const selectedLineHeight = shallowRef<string | null>(null);
 const selectedListStyles = shallowRef<Record<ListCommand, string>>({
@@ -109,7 +110,7 @@ function activate(item: ToolbarItemDefinition, event: MouseEvent): void {
         if (item.dialog === 'forecolor' || item.dialog === 'backcolor')
             togglePopover(item.dialog, event);
         else emit('dialog', item.dialog);
-    } else if (item.name === 'more') open.value = open.value === 'more' ? null : 'more';
+    } else if (item.name === 'more') moreExpanded.value = !moreExpanded.value;
 }
 function chooseCase(mode: TextCaseMode): void {
     selectedCase.value = mode;
@@ -138,9 +139,16 @@ function outside(event: PointerEvent): void {
     if (target && container.value?.contains(target)) return;
 
     const targetElement = target instanceof Element ? target : target?.parentElement;
-    if (open.value === 'more' && targetElement?.closest('.erag-editor__content-wrap')) return;
+    if (
+        moreExpanded.value &&
+        targetElement?.closest('.erag-editor__content-wrap, .erag-dialog-backdrop')
+    ) {
+        open.value = null;
+        return;
+    }
 
     open.value = null;
+    moreExpanded.value = false;
 }
 function isHistoryCommand(item: ToolbarItemDefinition): boolean {
     return item.command === 'undo' || item.command === 'redo';
@@ -242,14 +250,14 @@ onBeforeUnmount(() => {
         >
             <ToolbarButton
                 :item="TOOLBAR_ITEMS.more"
-                :active="open === 'more'"
+                :active="moreExpanded"
                 :available="false"
                 :disabled="disabled"
                 @activate="activate"
             />
         </div>
         <div
-            v-if="overflow.length && open === 'more'"
+            v-if="overflow.length && moreExpanded"
             class="erag-toolbar__overflow-row"
             role="toolbar"
             aria-label="More formatting options"
