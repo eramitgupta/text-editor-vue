@@ -100,6 +100,7 @@ export function useMergeTags(sources: MergeTagComposableSources, callbacks: Merg
         const item = removeAdjacentMergeTag(
             sources.root.value,
             event.key === 'Backspace' ? 'backward' : 'forward',
+            sources.executeCommand,
         );
         if (!item) return false;
         event.preventDefault();

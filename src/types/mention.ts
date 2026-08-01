@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue';
+import type { NativeEditorCommand } from './commands';
 
 export interface MentionItem {
     id: string | number;
@@ -62,6 +63,7 @@ export interface MentionComposableSources {
     root: Ref<HTMLElement | null>;
     config: ComputedRef<ResolvedMentionConfig>;
     locked: ComputedRef<boolean>;
+    executeCommand: NativeEditorCommand;
 }
 
 export interface MentionItemSlotProps {

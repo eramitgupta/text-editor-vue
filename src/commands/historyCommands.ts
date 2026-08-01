@@ -1,5 +1,10 @@
-export function executeHistoryCommand(id: 'undo' | 'redo'): boolean {
-    return document.execCommand(id, false);
+import type { NativeEditorCommand } from '../types';
+
+export function executeHistoryCommand(
+    id: 'undo' | 'redo',
+    executeCommand: NativeEditorCommand,
+): boolean {
+    return executeCommand(id);
 }
 export function canUseHistory(id: 'undo' | 'redo'): boolean {
     try {

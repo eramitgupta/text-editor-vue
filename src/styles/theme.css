@@ -1,0 +1,115 @@
+:root {
+    color-scheme: light;
+
+    --erag-editor-border-color: #d9dce1;
+    --erag-editor-border-subtle: #e7eaf0;
+    --erag-editor-border-light: #edf0f4;
+    --erag-editor-border-muted: #e2e7ee;
+    --erag-editor-border-strong: #cbd5e1;
+    --erag-editor-border-input: #cfd6df;
+    --erag-editor-border-control: #d8dee8;
+    --erag-editor-text-color: #1f2937;
+    --erag-editor-text-strong: #273142;
+    --erag-editor-text-secondary: #334155;
+    --erag-editor-text-muted: #64748b;
+    --erag-editor-text-subtle: #9ca3af;
+    --erag-editor-muted-color: var(--erag-editor-text-muted);
+    --erag-editor-surface: #ffffff;
+    --erag-editor-panel: #f8fafc;
+    --erag-editor-surface-muted: #f1f5f9;
+    --erag-editor-hover-bg: #f0f3f7;
+    --erag-editor-active-color: #2563eb;
+    --erag-editor-active-hover: #1d4ed8;
+    --erag-editor-active-bg: #eaf2ff;
+    --erag-editor-active-bg-hover: #eff6ff;
+    --erag-editor-active-border: #bfdbfe;
+    --erag-editor-focus-color: #93b4f5;
+    --erag-editor-danger-color: #dc2626;
+    --erag-editor-danger-hover: #b91c1c;
+    --erag-editor-danger-text: #b42318;
+    --erag-editor-tooltip-surface: #111827;
+    --erag-editor-shadow: 0 10px 28px rgb(15 23 42 / 14%);
+    --erag-editor-shadow-sm: 0 8px 24px rgb(15 23 42 / 12%);
+    --erag-editor-shadow-lg: 0 22px 55px rgb(15 23 42 / 25%);
+    --erag-editor-overlay: rgb(15 23 42 / 38%);
+    --erag-editor-code-bg: #f1f5f9;
+    --erag-editor-radius: 9px;
+    --erag-editor-height: 420px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+        color-scheme: dark;
+        --erag-editor-border-color: #262626;
+        --erag-editor-border-subtle: #1f1f1f;
+        --erag-editor-border-light: #171717;
+        --erag-editor-border-muted: #333333;
+        --erag-editor-border-strong: #404040;
+        --erag-editor-border-input: #404040;
+        --erag-editor-border-control: #333333;
+        --erag-editor-text-color: #e5e5e5;
+        --erag-editor-text-strong: #fafafa;
+        --erag-editor-text-secondary: #d4d4d4;
+        --erag-editor-text-muted: #a3a3a3;
+        --erag-editor-text-subtle: #737373;
+        --erag-editor-muted-color: var(--erag-editor-text-muted);
+        --erag-editor-surface: #000000;
+        --erag-editor-panel: #0a0a0a;
+        --erag-editor-surface-muted: #171717;
+        --erag-editor-hover-bg: #171717;
+        --erag-editor-active-color: #60a5fa;
+        --erag-editor-active-hover: #93c5fd;
+        --erag-editor-active-bg: #172554;
+        --erag-editor-active-bg-hover: #1e3a8a;
+        --erag-editor-active-border: #3b82f6;
+        --erag-editor-focus-color: #60a5fa;
+        --erag-editor-danger-color: #ef4444;
+        --erag-editor-danger-hover: #f87171;
+        --erag-editor-danger-text: #fca5a5;
+        --erag-editor-tooltip-surface: #0a0a0a;
+        --erag-editor-shadow: 0 10px 28px rgb(0 0 0 / 35%);
+        --erag-editor-shadow-sm: 0 8px 24px rgb(0 0 0 / 30%);
+        --erag-editor-shadow-lg: 0 22px 55px rgb(0 0 0 / 45%);
+        --erag-editor-overlay: rgb(0 0 0 / 62%);
+        --erag-editor-code-bg: #0a0a0a;
+    }
+}
+
+:root[data-theme='dark'],
+html.dark,
+html[data-theme='dark'],
+.dark {
+    color-scheme: dark;
+    --erag-editor-border-color: #262626;
+    --erag-editor-border-subtle: #1f1f1f;
+    --erag-editor-border-light: #171717;
+    --erag-editor-border-muted: #333333;
+    --erag-editor-border-strong: #404040;
+    --erag-editor-border-input: #404040;
+    --erag-editor-border-control: #333333;
+    --erag-editor-text-color: #e5e5e5;
+    --erag-editor-text-strong: #fafafa;
+    --erag-editor-text-secondary: #d4d4d4;
+    --erag-editor-text-muted: #a3a3a3;
+    --erag-editor-text-subtle: #737373;
+    --erag-editor-muted-color: var(--erag-editor-text-muted);
+    --erag-editor-surface: #000000;
+    --erag-editor-panel: #0a0a0a;
+    --erag-editor-surface-muted: #171717;
+    --erag-editor-hover-bg: #171717;
+    --erag-editor-active-color: #60a5fa;
+    --erag-editor-active-hover: #93c5fd;
+    --erag-editor-active-bg: #172554;
+    --erag-editor-active-bg-hover: #1e3a8a;
+    --erag-editor-active-border: #3b82f6;
+    --erag-editor-focus-color: #60a5fa;
+    --erag-editor-danger-color: #ef4444;
+    --erag-editor-danger-hover: #f87171;
+    --erag-editor-danger-text: #fca5a5;
+    --erag-editor-tooltip-surface: #0a0a0a;
+    --erag-editor-shadow: 0 10px 28px rgb(0 0 0 / 35%);
+    --erag-editor-shadow-sm: 0 8px 24px rgb(0 0 0 / 30%);
+    --erag-editor-shadow-lg: 0 22px 55px rgb(0 0 0 / 45%);
+    --erag-editor-overlay: rgb(0 0 0 / 62%);
+    --erag-editor-code-bg: #0a0a0a;
+}

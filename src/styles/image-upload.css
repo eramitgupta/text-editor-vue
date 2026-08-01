@@ -1,10 +1,10 @@
 .erag-editor {
     --erag-image-upload-actions-space: 46px;
     --erag-image-upload-z-index: 60;
-    --erag-image-upload-color: #3974e8;
-    --erag-image-upload-background: #f8fbff;
-    --erag-image-upload-border: #8bb0f8;
-    --erag-image-upload-shadow: 0 7px 20px rgb(15 23 42 / 16%);
+    --erag-image-upload-color: var(--erag-editor-active-color);
+    --erag-image-upload-background: var(--erag-editor-panel);
+    --erag-image-upload-border: var(--erag-editor-focus-color);
+    --erag-image-upload-shadow: var(--erag-editor-shadow);
 }
 
 .erag-editor .erag-inline-image-upload-anchor {
@@ -36,7 +36,7 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    color: #334155;
+    color: var(--erag-editor-text-secondary);
     background: var(--erag-image-upload-background);
     border: 2px solid var(--erag-image-upload-border);
     border-radius: 5px;
@@ -45,7 +45,7 @@
 
 .erag-editor .erag-inline-image-upload.erag-is-dragging {
     color: var(--erag-image-upload-color);
-    background: #eff6ff;
+    background: var(--erag-editor-active-bg-hover);
     border-color: var(--erag-image-upload-color);
 }
 
@@ -83,7 +83,7 @@
     height: 44px;
     place-items: center;
     color: var(--erag-image-upload-color);
-    background: #e8f0ff;
+    background: var(--erag-editor-active-bg);
     border-radius: 10px;
 }
 
@@ -93,7 +93,7 @@
 }
 
 .erag-editor .erag-inline-image-upload__progress-label {
-    color: #64748b;
+    color: var(--erag-editor-text-muted);
     font-size: 12px;
 }
 
@@ -106,7 +106,7 @@
 
 .erag-editor .erag-inline-image-upload__error {
     margin-top: 7px;
-    color: #b42318;
+    color: var(--erag-editor-danger-text);
     font-size: 12px;
     text-align: center;
 }
@@ -118,8 +118,8 @@
     display: inline-flex;
     padding: 4px;
     gap: 2px;
-    background: #ffffff;
-    border: 1px solid #d8dee8;
+    background: var(--erag-editor-surface);
+    border: 1px solid var(--erag-editor-border-control);
     border-radius: 6px;
     box-shadow: var(--erag-image-upload-shadow);
     transform: translateX(-50%);
@@ -131,7 +131,7 @@
     height: 30px;
     padding: 0;
     place-items: center;
-    color: #475569;
+    color: var(--erag-editor-text-muted);
     cursor: pointer;
     background: transparent;
     border: 0;
@@ -153,7 +153,7 @@
 
 .erag-editor .erag-inline-image-upload__action--close:hover,
 .erag-editor .erag-inline-image-upload__action--close:focus-visible {
-    background: #dc2626;
+    background: var(--erag-editor-danger-color);
 }
 
 .erag-editor .erag-inline-image-upload__url-form {
@@ -178,9 +178,9 @@
     height: 36px;
     flex: 1 1 auto;
     padding: 0 10px;
-    color: #1f2937;
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
+    color: var(--erag-editor-text-color);
+    background: var(--erag-editor-surface);
+    border: 1px solid var(--erag-editor-border-strong);
     border-radius: 5px;
     outline: none;
 }

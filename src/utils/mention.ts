@@ -1,4 +1,4 @@
-import type { MentionItem, MentionQueryMatch } from '../types';
+import type { MentionItem, MentionQueryMatch, NativeEditorCommand } from '../types';
 
 const MENTION_QUERY_PATTERN = /(?:^|[\s([{])@([\p{L}\p{N}._-]*)$/u;
 const MENTION_SELECTOR = 'span.erag-mention[data-erag-mention="true"]';
@@ -120,6 +120,7 @@ export function normalizeMentionElement(element: Element): boolean {
 export function removeAdjacentMention(
     root: HTMLElement,
     direction: 'backward' | 'forward',
+    executeCommand: NativeEditorCommand,
 ): MentionItem | null {
     const selection = window.getSelection();
     if (!selection?.rangeCount || !selection.isCollapsed) return null;
@@ -140,7 +141,7 @@ export function removeAdjacentMention(
     deletionRange.selectNode(mention);
     selection.removeAllRanges();
     selection.addRange(deletionRange);
-    if (!document.execCommand('delete', false)) deletionRange.deleteContents();
+    if (!executeCommand('delete')) deletionRange.deleteContents();
     selection.collapseToEnd();
     return item;
 }

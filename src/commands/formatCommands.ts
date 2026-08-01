@@ -1,21 +1,25 @@
 import { FORMAT_COMMANDS } from '../constants/editorCommands';
-import type { TextCaseMode } from '../types';
+import type { NativeEditorCommand, TextCaseMode } from '../types';
 import { selectionElement } from '../utils/selection';
 
-export function executeFormatCommand(root: HTMLElement, id: string, value?: string): boolean {
+export function executeFormatCommand(
+    root: HTMLElement,
+    id: string,
+    value: string | undefined,
+    executeCommand: NativeEditorCommand,
+): boolean {
     root.focus({ preventScroll: true });
-    if (id === 'removeformat') return clearFormatting(root);
-    if (id === 'formatBlock') return document.execCommand('formatBlock', false, value ?? 'p');
-    if (id === 'fontfamily') return document.execCommand('fontName', false, value ?? 'Arial');
+    if (id === 'removeformat') return clearFormatting(root, executeCommand);
+    if (id === 'formatBlock') return executeCommand('formatBlock', value ?? 'p');
+    if (id === 'fontfamily') return executeCommand('fontName', value ?? 'Arial');
     if (id === 'fontsize') return applyInlineStyle(root, 'fontSize', value ?? '12pt');
     if (id === 'lineheight') return applyInlineStyle(root, 'lineHeight', value ?? '1.5');
-    if (id === 'forecolor') return document.execCommand('foreColor', false, value ?? '#000000');
-    if (id === 'backcolor')
-        return document.execCommand('hiliteColor', false, value ?? 'transparent');
-    if (id === 'inlineCode') return document.execCommand('formatBlock', false, 'pre');
+    if (id === 'forecolor') return executeCommand('foreColor', value ?? '#000000');
+    if (id === 'backcolor') return executeCommand('hiliteColor', value ?? 'transparent');
+    if (id === 'inlineCode') return executeCommand('formatBlock', 'pre');
     if (id === 'changeCase' && isTextCaseMode(value)) return changeSelectionCase(root, value);
     const command = FORMAT_COMMANDS[id];
-    return command ? document.execCommand(command, false) : false;
+    return command ? executeCommand(command) : false;
 }
 
 function changeSelectionCase(root: HTMLElement, mode: TextCaseMode): boolean {
@@ -57,13 +61,13 @@ function isTextCaseMode(value: string | undefined): value is TextCaseMode {
     return value === 'lowercase' || value === 'uppercase' || value === 'titlecase';
 }
 
-function clearFormatting(root: HTMLElement): boolean {
+function clearFormatting(root: HTMLElement, executeCommand: NativeEditorCommand): boolean {
     const selection = window.getSelection();
     if (!selection?.rangeCount || !root.contains(selection.getRangeAt(0).commonAncestorContainer))
         return false;
-    const removedInlineFormatting = document.execCommand('removeFormat', false);
-    const removedLink = document.execCommand('unlink', false);
-    const resetBlock = document.execCommand('formatBlock', false, 'p');
+    const removedInlineFormatting = executeCommand('removeFormat');
+    const removedLink = executeCommand('unlink');
+    const resetBlock = executeCommand('formatBlock', 'p');
     return removedInlineFormatting || removedLink || resetBlock;
 }
 

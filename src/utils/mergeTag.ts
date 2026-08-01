@@ -1,4 +1,4 @@
-import type { MergeTagItem, MergeTagQueryMatch } from '../types';
+import type { MergeTagItem, MergeTagQueryMatch, NativeEditorCommand } from '../types';
 
 const MERGE_TAG_PATTERN = /\{\{([^{}\n\r]*)$/u;
 const MERGE_TAG_SELECTOR = 'span.erag-merge-tag[data-erag-merge-tag="true"]';
@@ -96,6 +96,7 @@ export function normalizeMergeTagElement(element: Element): boolean {
 export function removeAdjacentMergeTag(
     root: HTMLElement,
     direction: 'backward' | 'forward',
+    executeCommand: NativeEditorCommand,
 ): MergeTagItem | null {
     const selection = window.getSelection();
     if (!selection?.rangeCount || !selection.isCollapsed) return null;
@@ -113,7 +114,7 @@ export function removeAdjacentMergeTag(
     deletionRange.selectNode(tag);
     selection.removeAllRanges();
     selection.addRange(deletionRange);
-    if (!document.execCommand('delete', false)) deletionRange.deleteContents();
+    if (!executeCommand('delete')) deletionRange.deleteContents();
     selection.collapseToEnd();
     return item;
 }

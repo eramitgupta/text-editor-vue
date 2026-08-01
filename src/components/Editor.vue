@@ -25,6 +25,7 @@ import { useEditorInstance } from '../composables/useEditorInstance';
 import { useEditorPaste } from '../composables/useEditorPaste';
 import { useEditorResize } from '../composables/useEditorResize';
 import { useEditorSelection } from '../composables/useEditorSelection';
+import { useNativeEditorCommand } from '../composables/useNativeEditorCommand';
 import { useFullscreen } from '../composables/useFullscreen';
 import { useImageResize } from '../composables/useImageResize';
 import { useTableInteractions } from '../composables/useTableInteractions';
@@ -73,6 +74,7 @@ const emit = defineEmits<EditorEmits>();
 defineSlots<EditorSlots>();
 const config = useEditorConfig(() => props.init);
 const editor = useEditor(config, props.modelValue);
+const { execute: executeNativeCommand } = useNativeEditorCommand();
 const history = useEditorHistory(editor.root);
 const selection = useEditorSelection(editor.root);
 const shell = useTemplateRef<HTMLElement>('shell');
@@ -101,7 +103,7 @@ const statusbar = computed(() => config.value.statusbar);
 const mentionConfig = computed(() => config.value.mentions);
 const mergeTagConfig = computed(() => config.value.mergeTags);
 const mentions = useMentions(
-    { root: editor.root, config: mentionConfig, locked },
+    { root: editor.root, config: mentionConfig, locked, executeCommand: executeNativeCommand },
     {
         search: (event) => emit('mention-search', event),
         select: (event) => emit('mention-select', event),
@@ -110,7 +112,7 @@ const mentions = useMentions(
     },
 );
 const mergeTags = useMergeTags(
-    { root: editor.root, config: mergeTagConfig, locked },
+    { root: editor.root, config: mergeTagConfig, locked, executeCommand: executeNativeCommand },
     {
         select: (event) => emit('merge-tag-select', event),
         remove: (event) => emit('merge-tag-remove', event),
@@ -248,10 +250,12 @@ function restoreAndRun(id: string, value?: string): void {
         return;
     }
     if (['cut', 'copy', 'paste', 'pasteText'].includes(id)) {
-        void executeAsyncEditorCommand(editor.root.value, id).then(() => syncInput());
+        void executeAsyncEditorCommand(editor.root.value, id, executeNativeCommand).then(() =>
+            syncInput(),
+        );
         return;
     }
-    if (executeEditorCommand(editor.root.value, id, value)) syncInput();
+    if (executeEditorCommand(editor.root.value, id, value, executeNativeCommand)) syncInput();
 }
 function openDialog(name: string): void {
     if (locked.value && !['preview', 'source', 'shortcuts', 'about'].includes(name)) return;
@@ -296,7 +300,7 @@ function saveLink(value: LinkValue): void {
 }
 function unlink(): void {
     selection.restore();
-    document.execCommand('unlink', false);
+    executeNativeCommand('unlink');
     syncInput();
     closeDialog();
 }
@@ -442,6 +446,7 @@ const editorInstance = useEditorInstance({
     locked,
     syncInput,
     runCommand: restoreAndRun,
+    executeCommand: executeNativeCommand,
     openDialog,
 });
 defineExpose(editorInstance);

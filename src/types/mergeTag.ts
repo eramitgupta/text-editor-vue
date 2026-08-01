@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue';
+import type { NativeEditorCommand } from './commands';
 
 export interface MergeTagItem {
     value: string;
@@ -42,6 +43,7 @@ export interface MergeTagComposableSources {
     root: Ref<HTMLElement | null>;
     config: ComputedRef<ResolvedMergeTagConfig>;
     locked: ComputedRef<boolean>;
+    executeCommand: NativeEditorCommand;
 }
 
 export interface MergeTagSidebarSources {

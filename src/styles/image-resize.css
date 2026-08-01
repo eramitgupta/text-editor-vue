@@ -1,7 +1,7 @@
 .erag-editor {
-    --erag-image-resize-color: #2563eb;
+    --erag-image-resize-color: var(--erag-editor-active-color);
     --erag-image-resize-handle-size: 12px;
-    --erag-image-delete-background: #dc2626;
+    --erag-image-delete-background: var(--erag-editor-danger-color);
 }
 
 .erag-editor .erag-image-resize {
@@ -18,7 +18,7 @@
     padding: 0;
     touch-action: none;
     pointer-events: auto;
-    background: #ffffff;
+    background: var(--erag-editor-surface);
     border: 2px solid var(--erag-image-resize-color);
     border-radius: 2px;
 }
@@ -73,7 +73,7 @@
 
 .erag-editor .erag-image-resize__delete:hover,
 .erag-editor .erag-image-resize__delete:focus-visible {
-    background: #b91c1c;
+    background: var(--erag-editor-danger-hover);
     outline: 2px solid #ffffff;
     outline-offset: 1px;
 }
@@ -91,7 +91,7 @@
     line-height: 1.2;
     pointer-events: none;
     visibility: hidden;
-    background: #111827;
+    background: var(--erag-editor-tooltip-surface);
     border-radius: 5px;
     box-shadow: 0 4px 12px rgb(15 23 42 / 18%);
     content: attr(data-erag-tooltip);

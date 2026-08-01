@@ -7,6 +7,7 @@ import './styles/image-resize.css';
 import './styles/image-upload.css';
 import './styles/merge-tags.css';
 import './styles/templates.css';
+import './styles/theme.css';
 
 export { default as Editor } from './components/Editor.vue';
 export { defaultEditorConfig } from './config/defaultConfig';

@@ -69,6 +69,7 @@ function insert(): void {
     <BaseDialog
         title="Templates"
         wide
+        body-class="erag-dialog__body--template"
         :footer-divider="false"
         @close="emit('close')"
     >

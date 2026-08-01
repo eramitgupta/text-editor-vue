@@ -1,4 +1,6 @@
 export type EditorCommandId = string;
+export type NativeEditorCommand = (commandId: string, value?: string) => boolean;
+
 export interface CommandContext {
     root: HTMLElement;
     restoreSelection: () => boolean;

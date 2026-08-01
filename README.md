@@ -24,7 +24,7 @@ A dependency-free Vue 3 rich text editor built with native browser APIs, flexibl
 - ♿ **Accessible controls** — ARIA labels, roles, live regions, focus restoration, active states, disabled states, and screen-reader-friendly interactions.
 - 🧼 **Paste cleanup** — sanitized formatted HTML, plain-text paste, pasted-image upload, unsafe attribute removal, and practical Word and Google Docs normalization.
 - 🛡️ **Safer HTML handling** — internal allowlist sanitization, safe URL checks, restricted embed handling, script removal, unsafe event removal, and SSR-safe initialization.
-- 🎨 **Application-safe styling** — responsive white editor UI, package-scoped selectors, consistent BEM naming, and prefixed `erag-` classes and CSS variables.
+- 🎨 **Application-safe styling** — responsive light/dark editor UI, package-scoped selectors, consistent BEM naming, and prefixed `erag-` classes and CSS variables.
 - 📦 **Publishing-ready package** — ESM bundle, generated TypeScript declarations, tree-shakable exports, stylesheet export, Vue peer dependency, and Node.js 24 build support.
 
 ## Documentation

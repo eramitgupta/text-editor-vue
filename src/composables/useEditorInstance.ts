@@ -1,5 +1,5 @@
 import type { ComputedRef } from 'vue';
-import type { EditorInstance } from '../types';
+import type { EditorInstance, NativeEditorCommand } from '../types';
 import { escapeHtml, insertAtSelection } from '../utils/html';
 import type { useEditor } from './useEditor';
 import type { useEditorSelection } from './useEditorSelection';
@@ -12,6 +12,7 @@ interface EditorInstanceOptions {
     locked: ComputedRef<boolean>;
     syncInput: () => void;
     runCommand: (id: string) => void;
+    executeCommand: NativeEditorCommand;
     openDialog: (name: string) => void;
 }
 
@@ -35,7 +36,7 @@ export function useEditorInstance(options: EditorInstanceOptions): EditorInstanc
 
     function selectAll(): void {
         focus();
-        document.execCommand('selectAll', false);
+        options.executeCommand('selectAll');
         options.selection.update();
     }
 

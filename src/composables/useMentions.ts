@@ -134,6 +134,7 @@ export function useMentions(sources: MentionComposableSources, callbacks: Mentio
         const item = removeAdjacentMention(
             sources.root.value,
             event.key === 'Backspace' ? 'backward' : 'forward',
+            sources.executeCommand,
         );
         if (!item) return false;
         event.preventDefault();

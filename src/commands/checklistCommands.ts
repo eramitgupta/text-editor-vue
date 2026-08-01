@@ -1,20 +1,21 @@
 import { closestElement } from '../utils/dom';
+import type { NativeEditorCommand } from '../types';
 
 const CHECKLIST_SELECTOR = 'ul[data-erag-checklist="true"]';
 const CHECKLIST_ITEM_SELECTOR = 'li[data-erag-checklist-item="true"]';
 const CHECKBOX_SELECTOR = 'input[data-erag-checklist-checkbox="true"]';
 
-export function insertChecklist(root: HTMLElement): boolean {
+export function insertChecklist(root: HTMLElement, executeCommand: NativeEditorCommand): boolean {
     root.focus({ preventScroll: true });
 
     const activeList = closestElement(root, 'ul');
     if (activeList?.matches(CHECKLIST_SELECTOR)) {
         checklistItems(activeList).forEach(clearChecklistItem);
         delete activeList.dataset.eragChecklist;
-        return document.execCommand('insertUnorderedList', false);
+        return executeCommand('insertUnorderedList');
     }
 
-    if (!document.execCommand('insertUnorderedList', false)) return false;
+    executeCommand('insertUnorderedList');
 
     const list = closestElement(root, 'ul');
     if (!list) return false;
