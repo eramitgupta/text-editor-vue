@@ -13,10 +13,6 @@
         "release": true
     },
     "hooks": {
-        "before:init": [
-            "npm run lint:check",
-            "npm run typecheck",
-            "npm run build"
-        ]
+        "before:init": ["npm run lint:check", "npm run typecheck", "npm run build"]
     }
 }
