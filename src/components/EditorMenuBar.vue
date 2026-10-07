@@ -36,6 +36,7 @@ const emit = defineEmits<{
 }>();
 defineSlots<{ end(): unknown }>();
 const open = shallowRef<EditorMenuName | null>(null);
+const openTrigger = shallowRef<HTMLElement | null>(null);
 const root = useTemplateRef<HTMLElement>('root');
 const currentDate = shallowRef(new Date());
 const definitions = computed(() =>
@@ -76,8 +77,9 @@ function resolveItems(items: MenuItemDefinition[]): MenuItemDefinition[] {
             return children ? { ...item, children: resolveItems(children) } : item;
         });
 }
-function toggle(name: EditorMenuName): void {
+function toggle(name: EditorMenuName, trigger: HTMLElement): void {
     if (props.disabled) return;
+    openTrigger.value = trigger;
     currentDate.value = new Date();
     emit('opening', name);
     if (name === 'merge-tags') {
@@ -140,7 +142,7 @@ onBeforeUnmount(() => {
                 :title="menu.label"
                 :disabled="disabled"
                 @mousedown.prevent
-                @click="toggle(menu.name)"
+                @click="toggle(menu.name, $event.currentTarget as HTMLElement)"
             >
                 <EditorIcon
                     class="erag-menubar__icon"
@@ -156,6 +158,7 @@ onBeforeUnmount(() => {
                 :active-commands="activeCommands"
                 :available-commands="availableCommands"
                 :inside-table="insideTable"
+                :anchor="openTrigger"
                 @select="select"
                 @close="open = null"
             />

@@ -131,10 +131,9 @@
     flex: 1 1 112px;
 }
 .erag-toolbar__popover {
-    position: absolute;
+    position: fixed;
     z-index: 75;
-    top: calc(100% + 7px);
-    max-width: calc(100% - 16px);
+    max-width: calc(100vw - 16px);
 }
 .erag-case-menu {
     display: grid;
@@ -300,4 +299,15 @@
     padding: 1px;
     border: 1px solid var(--erag-editor-border-muted);
     border-radius: 4px;
+}
+
+@media (max-width: 680px) {
+    .erag-toolbar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--erag-editor-border-strong) transparent;
+    }
 }

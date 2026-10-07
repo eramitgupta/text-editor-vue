@@ -1,6 +1,6 @@
 import { nextTick, onBeforeUnmount, onMounted, shallowRef, watch, type Ref } from 'vue';
 
-const VIEWPORT_PADDING = 8;
+export const VIEWPORT_PADDING = 8;
 const FLOATING_GAP = 6;
 
 export function useFloatingPosition(
@@ -88,7 +88,7 @@ export function useFloatingPosition(
     watch(
         [trigger, panel, boundaryRef],
         () => {
-            if (!trigger.value) {
+            if (!trigger.value || !panel.value) {
                 activeTrigger = null;
                 placeAbove = null;
             }

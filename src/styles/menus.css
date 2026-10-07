@@ -133,14 +133,16 @@
 }
 
 @media (max-width: 680px) {
-    .erag-menu {
-        position: fixed;
-        top: 48px;
-        left: 8px;
+    .erag-menubar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--erag-editor-border-strong) transparent;
     }
-    .erag-menu--nested {
-        top: 0;
-        left: min(210px, 32vw);
+    .erag-menubar__end {
+        flex: 0 0 auto;
     }
 }
 
@@ -148,23 +150,5 @@
     .erag-menubar {
         gap: 2px;
         padding-inline: 4px;
-    }
-
-    .erag-menubar__button {
-        justify-content: center;
-        width: 32px;
-        height: 30px;
-        padding: 5px;
-    }
-
-    .erag-menubar__label {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
     }
 }
