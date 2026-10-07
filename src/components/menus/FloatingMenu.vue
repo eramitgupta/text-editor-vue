@@ -21,9 +21,7 @@ const floatingStyle =
     (props.level ?? 0) === 0 ? useFloatingPosition(anchor, menu).style : undefined;
 
 function isDisabled(item: MenuItemDefinition): boolean {
-    const explicitlyUnavailable = Boolean(
-        item.command && props.availableCommands[item.command] === false,
-    );
+    const explicitlyUnavailable = Boolean(item.command && !props.availableCommands[item.command]);
     return props.disabled || explicitlyUnavailable || Boolean(item.tableOnly && !props.insideTable);
 }
 function isActive(item: MenuItemDefinition): boolean {
