@@ -1,5 +1,5 @@
 import { closestElement } from '../utils/dom';
-import type { CellPropertiesValue } from '../types';
+import type { CellPropertiesValue, TablePropertiesValue } from '../types';
 
 export function executeTableCommand(root: HTMLElement, id: string): boolean {
     const cell = closestElement(root, 'td') ?? closestElement(root, 'th');
@@ -30,11 +30,7 @@ export function executeTableCommand(root: HTMLElement, id: string): boolean {
             if (currentRow.cells[index]) currentRow.deleteCell(index);
         return true;
     }
-    if (id === 'mergeCells') {
-        cell.colSpan += 1;
-        cell.nextElementSibling?.remove();
-        return true;
-    }
+    if (id === 'mergeCells') return mergeWithNextCell(cell);
     if (id === 'splitCell' && cell.colSpan > 1) {
         cell.colSpan -= 1;
         const next = document.createElement(cell.tagName.toLowerCase());
@@ -47,6 +43,18 @@ export function executeTableCommand(root: HTMLElement, id: string): boolean {
         return true;
     }
     return false;
+}
+function mergeWithNextCell(cell: HTMLTableCellElement): boolean {
+    const next = cell.nextElementSibling;
+    if (!(next instanceof HTMLTableCellElement)) return false;
+    if (next.textContent?.trim()) {
+        if (cell.textContent?.trim()) cell.append(document.createElement('br'));
+        else cell.replaceChildren();
+        cell.append(...next.childNodes);
+    }
+    cell.colSpan += next.colSpan;
+    next.remove();
+    return true;
 }
 function emptyRow(source: HTMLTableRowElement): HTMLTableRowElement {
     const row = document.createElement('tr');
@@ -73,6 +81,33 @@ export function applyTableProperties(root: HTMLElement, values: Record<string, s
     for (const cell of table.querySelectorAll<HTMLElement>('td,th'))
         cell.style.padding = values.cellPadding || '';
     return true;
+}
+
+export function getTableProperties(
+    root: HTMLElement | null,
+    range: Range | null,
+): TablePropertiesValue {
+    const table = root ? (selectedCell(root, range)?.closest('table') ?? null) : null;
+    const style = table?.style;
+    const centered = style?.marginLeft === 'auto' && style.marginRight === 'auto';
+    return {
+        width: style?.width || '100%',
+        cellPadding: table?.querySelector<HTMLElement>('td,th')?.style.padding || '8px',
+        borderWidth: style?.borderWidth || '1px',
+        borderStyle: style?.borderStyle || 'solid',
+        borderColor: hexColor(style?.borderColor) || '#d9dce1',
+        backgroundColor: hexColor(style?.backgroundColor) || '#ffffff',
+        alignment: centered ? 'center' : style?.marginLeft === 'auto' ? 'right' : 'left',
+    };
+}
+
+/** Color inputs only accept `#rrggbb`, while inline styles read back as `rgb(...)`. */
+function hexColor(value: string | undefined): string {
+    if (!value) return '';
+    if (/^#[\da-f]{6}$/i.test(value)) return value;
+    const channels = value.match(/\d+/g)?.slice(0, 3).map(Number);
+    if (channels?.length !== 3) return '';
+    return `#${channels.map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
 }
 
 export function getCellProperties(

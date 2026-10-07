@@ -10,3 +10,4 @@ export const KEYBOARD_SHORTCUTS: Record<string, string> = {
     'mod+f': 'find-replace',
     'mod+shift+p': 'preview',
 };
+export const DIALOG_SHORTCUTS = new Set(['link', 'preview', 'find-replace']);

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue';
 import { TOOLBAR_ITEMS, parseToolbar } from '../config/toolbarConfig';
+import { isReadOnlyAction } from '../constants/editorCommands';
 import { useFloatingPosition } from '../composables/useFloatingPosition';
 import { useToolbarOverflow } from '../composables/useToolbarOverflow';
 import type {
@@ -24,6 +25,7 @@ const props = defineProps<{
     activeCommands: Record<string, boolean>;
     availableCommands: Record<string, boolean>;
     disabled: boolean;
+    locked: boolean;
     insideTable: boolean;
 }>();
 const emit = defineEmits<{ command: [id: string, value?: string]; dialog: [name: string] }>();
@@ -144,7 +146,11 @@ function isAvailable(item: ToolbarItemDefinition): boolean {
     return Boolean(item.command && props.availableCommands[item.command]);
 }
 function isDisabled(item: ToolbarItemDefinition): boolean {
-    return props.disabled || (isHistoryCommand(item) && !isAvailable(item));
+    return (
+        props.disabled ||
+        (props.locked && item.name !== 'more' && !isReadOnlyAction(item)) ||
+        (isHistoryCommand(item) && !isAvailable(item))
+    );
 }
 function isActive(item: ToolbarItemDefinition): boolean {
     if (item.name === 'casechange') return open.value === 'casechange';

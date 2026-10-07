@@ -1,4 +1,5 @@
 import type { TextCountStatistics } from '../types';
+import { closestPhrasingBlock, isBlockElement, liftNestedBlocks } from './dom';
 
 const TRANSIENT_CONTENT_SELECTOR = '[data-erag-transient="true"]';
 
@@ -20,7 +21,9 @@ export function getTextCounts(root: HTMLElement): { words: number; characters: n
     const text = getPersistentText(root)
         .replace(/\u00a0/g, ' ')
         .trim();
-    return { words: text ? text.split(/\s+/u).length : 0, characters: text.length };
+    // textContent joins adjacent blocks ("one</p><p>two" -> "onetwo"); innerText keeps the breaks.
+    const words = (root.innerText ?? text).trim();
+    return { words: words ? words.split(/\s+/u).length : 0, characters: text.length };
 }
 export function getDetailedTextCounts(value: string): TextCountStatistics {
     const text = value.replace(/\u00a0/g, ' ');
@@ -49,14 +52,33 @@ export function insertAtSelection(root: HTMLElement, html: string): boolean {
     range.deleteContents();
     const fragment = range.createContextualFragment(html);
     const last = fragment.lastChild;
-    range.insertNode(fragment);
+    const host = [...fragment.childNodes].some(isBlockElement)
+        ? closestPhrasingBlock(range.startContainer, root)
+        : null;
+    if (host) {
+        const tail = document.createRange();
+        tail.setStart(range.startContainer, range.startOffset);
+        tail.setEnd(host, host.childNodes.length);
+        host.append(fragment, tail.extractContents());
+        liftNestedBlocks(host);
+    } else range.insertNode(fragment);
     if (last) {
-        range.setStartAfter(last);
-        range.collapse(true);
+        placeCaretAfter(range, last);
         selection.removeAllRanges();
         selection.addRange(range);
     }
     return true;
+}
+
+function placeCaretAfter(range: Range, node: Node): void {
+    if (isBlockElement(node) && !node.matches('hr,table,ul,ol,dl')) {
+        const end =
+            node.lastChild instanceof HTMLBRElement
+                ? node.childNodes.length - 1
+                : node.childNodes.length;
+        range.setStart(node, end);
+    } else range.setStartAfter(node);
+    range.collapse(true);
 }
 
 function createRangeAtEnd(root: HTMLElement): Range {

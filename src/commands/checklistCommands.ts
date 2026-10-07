@@ -1,4 +1,5 @@
 import { closestElement } from '../utils/dom';
+import { normalizeMovedBlocks } from './listCommands';
 import type { NativeEditorCommand } from '../types';
 
 const CHECKLIST_SELECTOR = 'ul[data-erag-checklist="true"]';
@@ -12,10 +13,13 @@ export function insertChecklist(root: HTMLElement, executeCommand: NativeEditorC
     if (activeList?.matches(CHECKLIST_SELECTOR)) {
         checklistItems(activeList).forEach(clearChecklistItem);
         delete activeList.dataset.eragChecklist;
-        return executeCommand('insertUnorderedList');
+        const removed = executeCommand('insertUnorderedList');
+        normalizeMovedBlocks(root, executeCommand);
+        return removed;
     }
 
     executeCommand('insertUnorderedList');
+    normalizeMovedBlocks(root, executeCommand);
 
     const list = closestElement(root, 'ul');
     if (!list) return false;

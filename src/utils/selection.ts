@@ -45,3 +45,27 @@ export function getCaretRect(range: Range): DOMRect {
             : caret.endContainer.parentElement;
     return element?.getBoundingClientRect() ?? new DOMRect();
 }
+
+/**
+ * Put the caret after an inserted inline atom (mention, merge tag). A non-breaking space
+ * is added unless whitespace already follows: a plain space collapses at the end of a
+ * line, so the next typed word would stick to the atom.
+ */
+export function placeCaretAfterAtom(range: Range, atom: ChildNode): void {
+    const next = atom.nextSibling;
+    if (next instanceof Text && /^[\s\u00a0]/u.test(next.data)) {
+        range.setStart(next, 1);
+    } else {
+        const space = document.createTextNode('\u00a0');
+        atom.after(space);
+        range.setStartAfter(space);
+    }
+    range.collapse(true);
+}
+
+export function selectNodeContents(node: Node | null): boolean {
+    const selection = window.getSelection();
+    if (!node || !selection) return false;
+    selection.selectAllChildren(node);
+    return true;
+}

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onMounted, useTemplateRef } from 'vue';
+import { useScrollLock } from '../../composables/useScrollLock';
 import { focusableElements } from '../../utils/dom';
 const props = withDefaults(
     defineProps<{
@@ -15,6 +16,7 @@ const props = withDefaults(
 const emit = defineEmits<{ close: [] }>();
 defineSlots<{ default(): unknown; footer(): unknown }>();
 const panel = useTemplateRef<HTMLElement>('panel');
+useScrollLock();
 onMounted(async () => {
     await nextTick();
     focusableElements(panel.value as HTMLElement)[0]?.focus();
