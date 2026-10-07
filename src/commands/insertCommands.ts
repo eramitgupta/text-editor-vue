@@ -8,9 +8,10 @@ export function insertLink(root: HTMLElement, value: LinkValue, allowRelative: b
     const selectedText = selection?.toString() ?? '';
     const text = value.text || selectedText || value.url;
     const target = value.target === '_blank' ? ' target="_blank" rel="noopener noreferrer"' : '';
+    const title = value.title ? ` title="${escapeAttribute(value.title)}"` : '';
     return insertAtSelection(
         root,
-        `<a href="${escapeAttribute(value.url)}" title="${escapeAttribute(value.title)}"${target}>${escapeHtml(text)}</a>`,
+        `<a href="${escapeAttribute(value.url)}"${title}${target}>${escapeHtml(text)}</a>`,
     );
 }
 export function insertImage(

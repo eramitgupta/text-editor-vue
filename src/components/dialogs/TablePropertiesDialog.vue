@@ -1,17 +1,11 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
+import type { TablePropertiesValue } from '../../types';
 import BaseDialog from './BaseDialog.vue';
 
+const props = defineProps<{ initial: TablePropertiesValue }>();
 const emit = defineEmits<{ close: []; save: [values: Record<string, string>] }>();
-const form = reactive({
-    width: '100%',
-    cellPadding: '8px',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: '#d9dce1',
-    backgroundColor: '#ffffff',
-    alignment: 'left',
-});
+const form = reactive<TablePropertiesValue>({ ...props.initial });
 const propertyFields = [
     { key: 'width', label: 'Width', type: 'text' },
     { key: 'cellPadding', label: 'Cell padding', type: 'text' },

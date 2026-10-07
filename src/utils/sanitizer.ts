@@ -38,6 +38,14 @@ const SAFE_STYLES = new Set([
     'padding',
     'background',
 ]);
+const REMOVED_WITH_CONTENT = new Set([
+    'script',
+    'style',
+    'noscript',
+    'template',
+    'object',
+    'embed',
+]);
 
 export function sanitizeHtml(html: string, options: SanitizerOptions): string {
     if (!canSanitizeHtml()) return '';
@@ -52,8 +60,13 @@ export function sanitizeHtml(html: string, options: SanitizerOptions): string {
     for (const element of elements) sanitizeElement(element, options);
     return documentNode.body.innerHTML;
 }
-function sanitizeElement(element: Element, options: SanitizerOptions): void {
+function sanitizeElement(source: Element, options: SanitizerOptions): void {
+    const element = source.tagName.toLowerCase() === 'font' ? convertFontElement(source) : source;
     const tag = element.tagName.toLowerCase();
+    if (REMOVED_WITH_CONTENT.has(tag)) {
+        element.remove();
+        return;
+    }
     if (!options.allowedTags.includes(tag)) {
         element.replaceWith(...element.childNodes);
         return;
@@ -80,6 +93,18 @@ function sanitizeElement(element: Element, options: SanitizerOptions): void {
     }
     if (tag === 'span') element.removeAttribute('contenteditable');
     if (tag === 'input') element.setAttribute('contenteditable', 'false');
+    sanitizeAttributes(element, tag, options);
+    if (tag === 'img' && !element.getAttribute('src')) {
+        element.remove();
+        return;
+    }
+    if (tag === 'iframe') {
+        const src = element.getAttribute('src') ?? '';
+        if (!/^https:\/\//i.test(src)) element.remove();
+        else element.setAttribute('sandbox', 'allow-same-origin allow-presentation');
+    }
+}
+function sanitizeAttributes(element: Element, tag: string, options: SanitizerOptions): void {
     const allowed = new Set([
         ...(options.allowedAttributes['*'] ?? []),
         ...(options.allowedAttributes[tag] ?? []),
@@ -98,13 +123,32 @@ function sanitizeElement(element: Element, options: SanitizerOptions): void {
             })
         )
             element.removeAttribute(attribute.name);
-        if (name === 'style') element.setAttribute('style', sanitizeStyle(attribute.value));
+        if (name === 'style') {
+            const style = sanitizeStyle(attribute.value);
+            if (style) element.setAttribute('style', style);
+            else element.removeAttribute('style');
+        }
     }
-    if (tag === 'iframe') {
-        const src = element.getAttribute('src') ?? '';
-        if (!/^https:\/\//i.test(src)) element.remove();
-        else element.setAttribute('sandbox', 'allow-same-origin allow-presentation');
-    }
+}
+/**
+ * Older content (and browsers without the CSS styling flag) store fonts and colors in
+ * `<font>` tags; keep that formatting as an inline-styled span.
+ */
+function convertFontElement(font: Element): Element {
+    const span = font.ownerDocument.createElement('span');
+    const face = font.getAttribute('face');
+    const color = font.getAttribute('color');
+    const style = [
+        font.getAttribute('style') ?? '',
+        face ? `font-family:${face}` : '',
+        color ? `color:${color}` : '',
+    ]
+        .filter(Boolean)
+        .join(';');
+    if (style) span.setAttribute('style', style);
+    span.append(...font.childNodes);
+    font.replaceWith(span);
+    return span;
 }
 function sanitizeStyle(value: string): string {
     return value

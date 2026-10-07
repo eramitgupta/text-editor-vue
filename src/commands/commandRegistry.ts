@@ -1,7 +1,7 @@
 import { executeClipboardCommand } from './clipboardCommands';
 import { insertChecklist, isChecklistActive } from './checklistCommands';
 import { executeFormatCommand, queryFormatState } from './formatCommands';
-import { setListStyle } from './listCommands';
+import { normalizeMovedBlocks, setListStyle, toggleList } from './listCommands';
 import { insertAtSelection } from '../utils/html';
 import { executeTableCommand } from './tableCommands';
 import { printEditorContent } from './printCommands';
@@ -27,8 +27,18 @@ export function executeEditorCommand(
 ): boolean {
     if (TABLE_COMMANDS.has(id)) return executeTableCommand(root, id);
     if (id === 'checklist') return insertChecklist(root, executeCommand);
-    if ((id === 'bullist' || id === 'numlist') && value !== undefined)
-        return setListStyle(root, id === 'bullist' ? 'ul' : 'ol', value, executeCommand);
+    if (id === 'bullist' || id === 'numlist') {
+        const type = id === 'bullist' ? 'ul' : 'ol';
+        root.focus({ preventScroll: true });
+        return value === undefined
+            ? toggleList(root, type, executeCommand)
+            : setListStyle(root, type, value, executeCommand);
+    }
+    if (id === 'indent' || id === 'outdent') {
+        const changed = executeFormatCommand(root, id, value, executeCommand);
+        normalizeMovedBlocks(root, executeCommand);
+        return changed;
+    }
     if (id === 'hr') return insertAtSelection(root, '<hr><p><br></p>');
     if (id === 'anchor')
         return insertAtSelection(

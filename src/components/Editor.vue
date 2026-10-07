@@ -14,10 +14,12 @@ import {
     applyCellProperties,
     applyTableProperties,
     getCellProperties,
+    getTableProperties,
     navigateTableCell,
 } from '../commands/tableCommands';
 import { insertLink, insertMedia, insertTable } from '../commands/insertCommands';
-import { KEYBOARD_SHORTCUTS } from '../constants/keyboardShortcuts';
+import { READ_ONLY_COMMANDS, READ_ONLY_DIALOGS } from '../constants/editorCommands';
+import { DIALOG_SHORTCUTS, KEYBOARD_SHORTCUTS } from '../constants/keyboardShortcuts';
 import { useEditor } from '../composables/useEditor';
 import { useEditorConfig } from '../composables/useEditorConfig';
 import { useEditorHistory } from '../composables/useEditorHistory';
@@ -48,6 +50,7 @@ import type {
 } from '../types';
 import { formatDateTime, mergeDateTimeFormats } from '../utils/dateTime';
 import { insertAtSelection } from '../utils/html';
+import { selectNodeContents } from '../utils/selection';
 import { cssUnit } from '../utils/units';
 import EditorContent from './EditorContent.vue';
 import EditorDialogs from './EditorDialogs.vue';
@@ -151,6 +154,9 @@ const wordCountData = useWordCount(editor.root, selection.savedRange);
 const cellPropertiesInitial = computed(() =>
     getCellProperties(editor.root.value, selection.savedRange.value),
 );
+const tablePropertiesInitial = computed(() =>
+    getTableProperties(editor.root.value, selection.savedRange.value),
+);
 const shellStyle = computed(() => ({
     width: cssUnit(config.value.width),
     minHeight: cssUnit(config.value.minHeight),
@@ -209,7 +215,7 @@ function handleInput(event: InputEvent): void {
     mergeTags.handleInput();
 }
 function restoreAndRun(id: string, value?: string): void {
-    if (locked.value || !editor.root.value) return;
+    if ((locked.value && !READ_ONLY_COMMANDS.has(id)) || !editor.root.value) return;
     if (id === 'saveSelection') {
         selection.save();
         return;
@@ -258,7 +264,7 @@ function restoreAndRun(id: string, value?: string): void {
     if (executeEditorCommand(editor.root.value, id, value, executeNativeCommand)) syncInput();
 }
 function openDialog(name: string): void {
-    if (locked.value && !['preview', 'source', 'shortcuts', 'about'].includes(name)) return;
+    if (locked.value && !READ_ONLY_DIALOGS.has(name)) return;
     if (inlineImageUpload.isOpen.value) {
         void inlineImageUpload.close().then(() => openDialog(name));
         return;
@@ -299,7 +305,7 @@ function saveLink(value: LinkValue): void {
     closeDialog();
 }
 function unlink(): void {
-    selection.restore();
+    if (!selectNodeContents(getSelectedAnchor())) selection.restore();
     executeNativeCommand('unlink');
     syncInput();
     closeDialog();
@@ -378,7 +384,7 @@ function commandShortcut(event: KeyboardEvent): boolean {
     const command = KEYBOARD_SHORTCUTS[key];
     if (!command) return false;
     event.preventDefault();
-    command.includes('-') ? openDialog(command) : restoreAndRun(command);
+    DIALOG_SHORTCUTS.has(command) ? openDialog(command) : restoreAndRun(command);
     return true;
 }
 function handleKeydown(event: KeyboardEvent): void {
@@ -476,6 +482,7 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
             :menus="menubar === true ? true : menubar"
             :plugins="config.plugins"
             :disabled="props.disabled"
+            :locked="locked"
             :active-commands="activeCommands"
             :available-commands="availableCommands"
             :inside-table="selection.state.value.insideTable"
@@ -500,6 +507,7 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
             :toolbar="toolbar"
             :config="config"
             :disabled="props.disabled"
+            :locked="locked"
             :active-commands="activeCommands"
             :available-commands="availableCommands"
             :inside-table="selection.state.value.insideTable"
@@ -679,6 +687,7 @@ onBeforeUnmount(() => document.removeEventListener('selectionchange', selectionC
         :root="editor.root.value"
         :word-count-data="wordCountData"
         :cell-properties-initial="cellPropertiesInitial"
+        :table-properties-initial="tablePropertiesInitial"
         @close="closeDialog"
         @save-link="saveLink"
         @unlink="unlink"

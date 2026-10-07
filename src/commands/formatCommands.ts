@@ -11,15 +11,54 @@ export function executeFormatCommand(
     root.focus({ preventScroll: true });
     if (id === 'removeformat') return clearFormatting(root, executeCommand);
     if (id === 'formatBlock') return executeCommand('formatBlock', value ?? 'p');
-    if (id === 'fontfamily') return executeCommand('fontName', value ?? 'Arial');
+    if (id === 'fontfamily') return executeWithCss(executeCommand, 'fontName', value ?? 'Arial');
     if (id === 'fontsize') return applyInlineStyle(root, 'fontSize', value ?? '12pt');
     if (id === 'lineheight') return applyInlineStyle(root, 'lineHeight', value ?? '1.5');
-    if (id === 'forecolor') return executeCommand('foreColor', value ?? '#000000');
+    if (id === 'forecolor') return executeWithCss(executeCommand, 'foreColor', value ?? '#000000');
     if (id === 'backcolor') return executeCommand('hiliteColor', value ?? 'transparent');
-    if (id === 'inlineCode') return executeCommand('formatBlock', 'pre');
+    if (id === 'inlineCode') return toggleInlineCode(root);
     if (id === 'changeCase' && isTextCaseMode(value)) return changeSelectionCase(root, value);
     const command = FORMAT_COMMANDS[id];
     return command ? executeCommand(command) : false;
+}
+
+/**
+ * Without the CSS styling flag Chrome writes `<font face>` / `<font color>`, which the
+ * sanitizer strips, so the formatting would be lost the next time the HTML is loaded.
+ */
+function executeWithCss(
+    executeCommand: NativeEditorCommand,
+    command: string,
+    value: string,
+): boolean {
+    executeCommand('styleWithCSS', 'true');
+    try {
+        return executeCommand(command, value);
+    } finally {
+        executeCommand('styleWithCSS', 'false');
+    }
+}
+
+function toggleInlineCode(root: HTMLElement): boolean {
+    const selection = window.getSelection();
+    if (!selection?.rangeCount) return false;
+    const range = selection.getRangeAt(0);
+    if (!root.contains(range.commonAncestorContainer)) return false;
+    const container = range.commonAncestorContainer;
+    const code = (container instanceof Element ? container : container.parentElement)?.closest(
+        'code',
+    );
+    if (code && root.contains(code) && !code.closest('pre')) {
+        code.replaceWith(...code.childNodes);
+        return true;
+    }
+    if (range.collapsed) return false;
+    const element = document.createElement('code');
+    element.textContent = range.toString();
+    range.deleteContents();
+    range.insertNode(element);
+    selection.selectAllChildren(element);
+    return true;
 }
 
 function changeSelectionCase(root: HTMLElement, mode: TextCaseMode): boolean {

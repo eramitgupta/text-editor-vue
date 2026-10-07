@@ -5,6 +5,11 @@ const props = defineProps<{ size: number }>();
 const emit = defineEmits<{ close: []; save: [rows: number, columns: number] }>();
 const rows = shallowRef(2);
 const columns = shallowRef(2);
+
+function highlight(index: number): void {
+    rows.value = Math.ceil(index / props.size);
+    columns.value = ((index - 1) % props.size) + 1;
+}
 </script>
 <template>
     <BaseDialog
@@ -27,11 +32,9 @@ const columns = shallowRef(2);
                         ((index - 1) % props.size) + 1 <= columns,
                 }"
                 :aria-label="`${Math.ceil(index / props.size)} rows by ${((index - 1) % props.size) + 1} columns`"
-                @mouseenter="
-                    rows = Math.ceil(index / props.size);
-                    columns = ((index - 1) % props.size) + 1;
-                "
-                @click="emit('save', rows, columns)"
+                @mouseenter="highlight(index)"
+                @focus="highlight(index)"
+                @click="emit('save', Math.ceil(index / props.size), ((index - 1) % props.size) + 1)"
             />
         </div>
         <p class="erag-table-grid__label">{{ rows }} × {{ columns }}</p>

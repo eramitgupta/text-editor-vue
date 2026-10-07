@@ -17,6 +17,7 @@ const props = defineProps<{
     menus: true | EditorMenuName[];
     plugins: string[];
     disabled: boolean;
+    locked: boolean;
     activeCommands: Record<string, boolean>;
     availableCommands: Record<string, boolean>;
     insideTable: boolean;
@@ -155,6 +156,7 @@ onBeforeUnmount(() => {
                 v-if="!['merge-tags', 'templates'].includes(menu.name) && open === menu.name"
                 :items="menu.items"
                 :disabled="disabled"
+                :locked="locked"
                 :active-commands="activeCommands"
                 :available-commands="availableCommands"
                 :inside-table="insideTable"

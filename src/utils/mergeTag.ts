@@ -1,4 +1,5 @@
 import type { MergeTagItem, MergeTagQueryMatch, NativeEditorCommand } from '../types';
+import { placeCaretAfterAtom } from './selection';
 
 const MERGE_TAG_PATTERN = /\{\{([^{}\n\r]*)$/u;
 const MERGE_TAG_SELECTOR = 'span.erag-merge-tag[data-erag-merge-tag="true"]';
@@ -39,11 +40,8 @@ export function insertMergeTagAtRange(
     if (!selection) return false;
     const tag = createMergeTagElement(item);
     range.deleteContents();
-    const space = document.createTextNode(' ');
-    range.insertNode(space);
     range.insertNode(tag);
-    range.setStartAfter(space);
-    range.collapse(true);
+    placeCaretAfterAtom(range, tag);
     selection.removeAllRanges();
     selection.addRange(range);
     root.dispatchEvent(

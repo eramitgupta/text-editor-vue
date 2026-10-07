@@ -82,6 +82,7 @@ defineEmits<EditorDialogsEmits>();
     />
     <TablePropertiesDialog
         v-if="dialog === 'table-properties'"
+        :initial="tablePropertiesInitial"
         @close="$emit('close')"
         @save="$emit('saveTableProperties', $event)"
     />

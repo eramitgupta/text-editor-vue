@@ -2,12 +2,14 @@
 import { computed, nextTick, useTemplateRef } from 'vue';
 import { useFloatingPosition, VIEWPORT_PADDING } from '../../composables/useFloatingPosition';
 import { resolveMenuItemIcon } from '../../config/menuIcons';
+import { isReadOnlyAction } from '../../constants/editorCommands';
 import type { MenuItemDefinition } from '../../types';
 import EditorIcon from '../icons/EditorIcon.vue';
 
 const props = defineProps<{
     items: MenuItemDefinition[];
     disabled: boolean;
+    locked: boolean;
     activeCommands: Record<string, boolean>;
     availableCommands: Record<string, boolean>;
     insideTable: boolean;
@@ -21,8 +23,16 @@ const floatingStyle =
     (props.level ?? 0) === 0 ? useFloatingPosition(anchor, menu).style : undefined;
 
 function isDisabled(item: MenuItemDefinition): boolean {
-    const explicitlyUnavailable = Boolean(item.command && !props.availableCommands[item.command]);
-    return props.disabled || explicitlyUnavailable || Boolean(item.tableOnly && !props.insideTable);
+    const explicitlyUnavailable = Boolean(
+        item.command && props.availableCommands[item.command] === false,
+    );
+    const readOnlyBlocked = props.locked && !item.children && !isReadOnlyAction(item);
+    return (
+        props.disabled ||
+        readOnlyBlocked ||
+        explicitlyUnavailable ||
+        Boolean(item.tableOnly && !props.insideTable)
+    );
 }
 function isActive(item: MenuItemDefinition): boolean {
     return Boolean(item.command && !isDisabled(item) && props.activeCommands[item.command]);
@@ -151,6 +161,7 @@ async function onKeydown(event: KeyboardEvent): Promise<void> {
                     v-if="item.children"
                     :items="item.children"
                     :disabled="disabled"
+                    :locked="locked"
                     :active-commands="activeCommands"
                     :available-commands="availableCommands"
                     :inside-table="insideTable"

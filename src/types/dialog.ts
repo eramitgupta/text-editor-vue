@@ -35,6 +35,16 @@ export interface CellPropertiesValue {
     verticalAlign: '' | 'top' | 'middle' | 'bottom';
 }
 
+export type TablePropertiesValue = {
+    width: string;
+    cellPadding: string;
+    borderWidth: string;
+    borderStyle: string;
+    borderColor: string;
+    backgroundColor: string;
+    alignment: string;
+};
+
 export interface EditorDialogsProps {
     dialog: EditorDialogName | null;
     dialogMode: 'forecolor' | 'backcolor' | null;
@@ -46,6 +56,7 @@ export interface EditorDialogsProps {
     root: HTMLElement | null;
     wordCountData: WordCountData;
     cellPropertiesInitial: CellPropertiesValue;
+    tablePropertiesInitial: TablePropertiesValue;
 }
 
 export interface EditorDialogsEmits {
