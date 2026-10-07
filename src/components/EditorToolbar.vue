@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue';
+import { computed, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue';
 import { TOOLBAR_ITEMS, parseToolbar } from '../config/toolbarConfig';
+import { useFloatingPosition } from '../composables/useFloatingPosition';
 import { useToolbarOverflow } from '../composables/useToolbarOverflow';
 import type {
     EditorToolbarGroup,
@@ -55,9 +56,9 @@ const selectedList = computed<ListCommand | null>(() => {
 const openListCommand = computed<ListCommand | null>(() =>
     open.value === 'bullist' || open.value === 'numlist' ? open.value : null,
 );
+const popover = useTemplateRef<HTMLElement>('popover');
 const popoverAnchor = shallowRef<HTMLElement | null>(null);
-const popoverLeft = shallowRef(8);
-const popoverStyle = computed(() => ({ left: `${popoverLeft.value}px` }));
+const { style: popoverStyle } = useFloatingPosition(popoverAnchor, popover);
 const groups = computed(() =>
     parseToolbar(props.toolbar)
         .map((group) => ({
@@ -76,24 +77,10 @@ const overflow = computed(() => groups.value.slice(visibleCount.value));
 function available(item: ToolbarItemDefinition): boolean {
     return !item.plugin || props.config.plugins.includes(item.plugin as never);
 }
-function positionPopover(): void {
-    const toolbar = container.value;
-    const anchor = popoverAnchor.value;
-    const popover = toolbar?.querySelector<HTMLElement>('.erag-toolbar__popover');
-    if (!toolbar || !anchor || !popover) return;
-
-    const toolbarRect = toolbar.getBoundingClientRect();
-    const anchorRect = anchor.getBoundingClientRect();
-    const inset = 8;
-    const preferredLeft = anchorRect.left - toolbarRect.left;
-    const maximumLeft = Math.max(inset, toolbarRect.width - popover.offsetWidth - inset);
-    popoverLeft.value = Math.min(Math.max(preferredLeft, inset), maximumLeft);
-}
 function togglePopover(name: string, event: MouseEvent): void {
     const willOpen = open.value !== name;
     open.value = willOpen ? name : null;
     popoverAnchor.value = willOpen ? (event.currentTarget as HTMLElement) : null;
-    if (willOpen) void nextTick(positionPopover);
 }
 function activate(item: ToolbarItemDefinition, event: MouseEvent): void {
     if (isDisabled(item)) return;
@@ -183,14 +170,8 @@ function chooseColor(type: string, color: string): void {
     emit('command', type, color || (type === 'forecolor' ? '#000000' : 'transparent'));
     open.value = null;
 }
-onMounted(() => {
-    document.addEventListener('pointerdown', outside);
-    window.addEventListener('resize', positionPopover);
-});
-onBeforeUnmount(() => {
-    document.removeEventListener('pointerdown', outside);
-    window.removeEventListener('resize', positionPopover);
-});
+onMounted(() => document.addEventListener('pointerdown', outside));
+onBeforeUnmount(() => document.removeEventListener('pointerdown', outside));
 </script>
 
 <template>
@@ -299,59 +280,54 @@ onBeforeUnmount(() => {
                 </template>
             </div>
         </div>
-        <ColorPalette
-            v-if="open === 'forecolor'"
+        <div
+            v-if="open"
+            ref="popover"
             class="erag-toolbar__popover"
             :style="popoverStyle"
-            :colors="config.textColors"
-            current=""
-            label="Text color"
-            @select="chooseColor('forecolor', $event)"
-        />
-        <CaseChangeMenu
-            v-if="open === 'casechange'"
-            class="erag-toolbar__popover"
-            :style="popoverStyle"
-            :mode="selectedCase"
-            @select="chooseCase"
-            @close="open = null"
-        />
-        <LineHeightMenu
-            v-if="open === 'lineheight'"
-            class="erag-toolbar__popover"
-            :style="popoverStyle"
-            :options="config.lineHeightFormats"
-            :selected="selectedLineHeight"
-            @select="chooseLineHeight"
-            @close="open = null"
-        />
-        <AlignmentMenu
-            v-if="open === 'alignment'"
-            class="erag-toolbar__popover"
-            :style="popoverStyle"
-            :selected="selectedAlignment"
-            @select="chooseAlignment"
-            @close="open = null"
-        />
-        <ListMenu
-            v-if="openListCommand"
-            class="erag-toolbar__popover"
-            :style="popoverStyle"
-            :command="openListCommand"
-            :active="selectedList === openListCommand"
-            :selected-style="selectedListStyles[openListCommand]"
-            @select="chooseList"
-            @close="open = null"
-        />
-        <ColorPalette
-            v-if="open === 'backcolor'"
-            class="erag-toolbar__popover"
-            :style="popoverStyle"
-            :colors="config.backgroundColors"
-            current=""
-            label="Background color"
-            @select="chooseColor('backcolor', $event)"
-        />
+        >
+            <ColorPalette
+                v-if="open === 'forecolor'"
+                :colors="config.textColors"
+                current=""
+                label="Text color"
+                @select="chooseColor('forecolor', $event)"
+            />
+            <CaseChangeMenu
+                v-if="open === 'casechange'"
+                :mode="selectedCase"
+                @select="chooseCase"
+                @close="open = null"
+            />
+            <LineHeightMenu
+                v-if="open === 'lineheight'"
+                :options="config.lineHeightFormats"
+                :selected="selectedLineHeight"
+                @select="chooseLineHeight"
+                @close="open = null"
+            />
+            <AlignmentMenu
+                v-if="open === 'alignment'"
+                :selected="selectedAlignment"
+                @select="chooseAlignment"
+                @close="open = null"
+            />
+            <ListMenu
+                v-if="openListCommand"
+                :command="openListCommand"
+                :active="selectedList === openListCommand"
+                :selected-style="selectedListStyles[openListCommand]"
+                @select="chooseList"
+                @close="open = null"
+            />
+            <ColorPalette
+                v-if="open === 'backcolor'"
+                :colors="config.backgroundColors"
+                current=""
+                label="Background color"
+                @select="chooseColor('backcolor', $event)"
+            />
+        </div>
         <div
             v-if="$slots.end"
             class="erag-toolbar__slot erag-toolbar__slot--end"

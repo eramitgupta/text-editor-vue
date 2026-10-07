@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { nextTick, useTemplateRef } from 'vue';
+import { computed, nextTick, useTemplateRef } from 'vue';
+import { useFloatingPosition, VIEWPORT_PADDING } from '../../composables/useFloatingPosition';
 import { resolveMenuItemIcon } from '../../config/menuIcons';
 import type { MenuItemDefinition } from '../../types';
 import EditorIcon from '../icons/EditorIcon.vue';
@@ -11,18 +12,48 @@ const props = defineProps<{
     availableCommands: Record<string, boolean>;
     insideTable: boolean;
     level?: number;
+    anchor?: HTMLElement | null;
 }>();
 const emit = defineEmits<{ select: [item: MenuItemDefinition]; close: [] }>();
 const menu = useTemplateRef<HTMLElement>('menu');
+const anchor = computed(() => props.anchor ?? null);
+const floatingStyle =
+    (props.level ?? 0) === 0 ? useFloatingPosition(anchor, menu).style : undefined;
 
 function isDisabled(item: MenuItemDefinition): boolean {
-    const explicitlyUnavailable = Boolean(
-        item.command && props.availableCommands[item.command] === false,
-    );
+    const explicitlyUnavailable = Boolean(item.command && !props.availableCommands[item.command]);
     return props.disabled || explicitlyUnavailable || Boolean(item.tableOnly && !props.insideTable);
 }
 function isActive(item: MenuItemDefinition): boolean {
     return Boolean(item.command && !isDisabled(item) && props.activeCommands[item.command]);
+}
+/**
+ * Keep a submenu inside the viewport, opening it on the left side of the parent
+ * menu when there is no room on the right.
+ */
+function fitNestedMenu(event: Event): void {
+    const nested = (event.currentTarget as HTMLElement).querySelector<HTMLElement>(
+        ':scope > .erag-menu--nested',
+    );
+    if (!nested || !menu.value) return;
+    nested.style.transform = '';
+    const rect = nested.getBoundingClientRect();
+    const maxRight = window.innerWidth - VIEWPORT_PADDING;
+    const maxBottom = window.innerHeight - VIEWPORT_PADDING;
+    let offsetX = 0;
+    if (rect.right > maxRight) {
+        const flippedLeft = menu.value.getBoundingClientRect().left - rect.width + 2;
+        const left =
+            flippedLeft >= VIEWPORT_PADDING
+                ? flippedLeft
+                : Math.max(VIEWPORT_PADDING, maxRight - rect.width);
+        offsetX = left - rect.left;
+    }
+    const offsetY =
+        rect.bottom > maxBottom
+            ? Math.max(VIEWPORT_PADDING, maxBottom - rect.height) - rect.top
+            : 0;
+    if (offsetX || offsetY) nested.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
 }
 function select(item: MenuItemDefinition): void {
     if (!item.children && !item.separator && !isDisabled(item)) emit('select', item);
@@ -67,6 +98,7 @@ async function onKeydown(event: KeyboardEvent): Promise<void> {
         ref="menu"
         class="erag-menu"
         :class="{ 'erag-menu--nested': (level ?? 0) > 0 }"
+        :style="anchor ? floatingStyle : undefined"
         role="menu"
         @keydown="onKeydown"
     >
@@ -82,6 +114,8 @@ async function onKeydown(event: KeyboardEvent): Promise<void> {
             <div
                 v-else
                 class="erag-menu__entry"
+                @mouseenter="fitNestedMenu"
+                @focusin="fitNestedMenu"
             >
                 <button
                     type="button"

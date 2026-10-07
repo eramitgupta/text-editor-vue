@@ -22,6 +22,13 @@ export function useToolbarOverflow(
         const element = container.value;
         if (!element) return;
 
+        const styles = window.getComputedStyle(element);
+        // A scrolling toolbar (mobile) shows every group instead of the "more" menu.
+        if (styles.overflowX !== 'visible') {
+            visibleCount.value = itemCount.value;
+            return;
+        }
+
         const renderedGroups = element.querySelectorAll<HTMLElement>(
             '[data-erag-toolbar-group-index]',
         );
@@ -35,7 +42,6 @@ export function useToolbarOverflow(
 
         if (groupWidths.slice(0, itemCount.value).some((width) => !width)) return;
 
-        const styles = window.getComputedStyle(element);
         const padding =
             Number.parseFloat(styles.paddingInlineStart) +
             Number.parseFloat(styles.paddingInlineEnd);
@@ -79,13 +85,21 @@ export function useToolbarOverflow(
 
     watch([itemCount, layoutKey], reset);
 
+    function onWindowResize(): void {
+        void measure();
+    }
+
     onMounted(() => {
         observer = new ResizeObserver(() => void measure());
         if (container.value) observer.observe(container.value);
+        window.addEventListener('resize', onWindowResize);
         void measure();
     });
 
-    onBeforeUnmount(() => observer?.disconnect());
+    onBeforeUnmount(() => {
+        observer?.disconnect();
+        window.removeEventListener('resize', onWindowResize);
+    });
 
     return { visibleCount, measure };
 }
